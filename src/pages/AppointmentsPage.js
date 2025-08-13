@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useAuth } from '../contexts/AuthContext';
 import { get, del } from '../utils/api';
 import toast, { Toaster } from 'react-hot-toast';
 import Header from '../components/Header';
@@ -11,8 +10,6 @@ const AppointmentsPage = () => {
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [appointmentToCancel, setAppointmentToCancel] = useState(null);
-
-  const { isAuthenticated } = useAuth();
 
   const fetchAppointments = useCallback(async () => {
     try {
