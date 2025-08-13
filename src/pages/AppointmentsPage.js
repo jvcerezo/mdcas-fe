@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { get, del } from '../utils/api';
+import { get, del, post, put } from '../utils/api';
 import toast, { Toaster } from 'react-hot-toast';
 import Header from '../components/Header';
 
@@ -10,6 +10,54 @@ const AppointmentsPage = () => {
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [appointmentToCancel, setAppointmentToCancel] = useState(null);
+  const [showBookingForm, setShowBookingForm] = useState(false);
+  const [showEditForm, setShowEditForm] = useState(false);
+  const [editingAppointment, setEditingAppointment] = useState(null);
+  const [bookingData, setBookingData] = useState({
+    date: '',
+    time: '',
+    service: '',
+    serviceName: '',
+    description: '',
+    doctor: '',
+    location: ''
+  });
+  const [editData, setEditData] = useState({
+    date: '',
+    time: '',
+    service: '',
+    serviceName: '',
+    description: '',
+    doctor: '',
+    location: ''
+  });
+
+  const services = [
+    { id: 'checkup', name: 'General Checkup', duration: '30 minutes', price: '₱500' },
+    { id: 'cleaning', name: 'Dental Cleaning', duration: '45 minutes', price: '₱800' },
+    { id: 'filling', name: 'Tooth Filling', duration: '1 hour', price: '₱1,200' },
+    { id: 'extraction', name: 'Tooth Extraction', duration: '45 minutes', price: '₱1,500' },
+    { id: 'whitening', name: 'Teeth Whitening', duration: '1.5 hours', price: '₱2,500' },
+    { id: 'implant', name: 'Dental Implant Consultation', duration: '1 hour', price: '₱3,000' }
+  ];
+
+  const doctors = [
+    { id: 'dr-smith', name: 'Dr. Maria Smith', specialty: 'General Dentistry' },
+    { id: 'dr-jones', name: 'Dr. John Jones', specialty: 'Orthodontics' },
+    { id: 'dr-garcia', name: 'Dr. Ana Garcia', specialty: 'Oral Surgery' }
+  ];
+
+  const locations = [
+    { id: 'main-clinic', name: 'Main Clinic - Downtown', address: '123 Main St, Downtown' },
+    { id: 'north-branch', name: 'North Branch', address: '456 North Ave, North District' },
+    { id: 'south-branch', name: 'South Branch', address: '789 South Blvd, South District' }
+  ];
+
+  const timeSlots = [
+    '09:00', '09:30', '10:00', '10:30', '11:00', '11:30',
+    '13:00', '13:30', '14:00', '14:30', '15:00', '15:30',
+    '16:00', '16:30', '17:00', '17:30'
+  ];
 
   const fetchAppointments = useCallback(async () => {
     try {
@@ -118,6 +166,94 @@ const AppointmentsPage = () => {
     }
   };
 
+  const handleBookingSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const selectedService = services.find(s => s.id === bookingData.service);
+      const appointmentData = {
+        ...bookingData,
+        serviceName: selectedService?.name || bookingData.serviceName
+      };
+
+      const response = await post('/appointments', appointmentData);
+      
+      if (response && (response.data || response)) {
+        toast.success('Appointment booked successfully!');
+        setShowBookingForm(false);
+        setBookingData({
+          date: '',
+          time: '',
+          service: '',
+          serviceName: '',
+          description: '',
+          doctor: '',
+          location: ''
+        });
+        fetchAppointments();
+      }
+    } catch (error) {
+      console.error('Error booking appointment:', error);
+      const errorMessage = error.response?.data?.message || 'Failed to book appointment. Please try again.';
+      toast.error(errorMessage);
+    }
+  };
+
+  const handleEditSubmit = async (e) => {
+    e.preventDefault();
+    if (!editingAppointment) return;
+
+    try {
+      const selectedService = services.find(s => s.id === editData.service);
+      const appointmentData = {
+        ...editData,
+        serviceName: selectedService?.name || editData.serviceName
+      };
+
+      const id = editingAppointment._id || editingAppointment.id;
+      const response = await put(`/appointments/${id}`, appointmentData);
+      
+      if (response && (response.data || response)) {
+        toast.success('Appointment updated successfully!');
+        setShowEditForm(false);
+        setEditingAppointment(null);
+        setEditData({
+          date: '',
+          time: '',
+          service: '',
+          serviceName: '',
+          description: '',
+          doctor: '',
+          location: ''
+        });
+        fetchAppointments();
+      }
+    } catch (error) {
+      console.error('Error updating appointment:', error);
+      const errorMessage = error.response?.data?.message || 'Failed to update appointment. Please try again.';
+      toast.error(errorMessage);
+    }
+  };
+
+  const handleEditAppointment = (appointment) => {
+    setEditingAppointment(appointment);
+    setEditData({
+      date: appointment.date ? appointment.date.split('T')[0] : '',
+      time: appointment.time || '',
+      service: appointment.service || '',
+      serviceName: appointment.serviceName || '',
+      description: appointment.description || '',
+      doctor: appointment.doctor || '',
+      location: appointment.location || ''
+    });
+    setShowEditForm(true);
+  };
+
+  const getTomorrowDate = () => {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    return tomorrow.toISOString().split('T')[0];
+  };
+
   if (isLoading) {
     return (
       <>
@@ -165,7 +301,7 @@ const AppointmentsPage = () => {
               <p className="text-gray-600">Manage your dental appointments and book new ones</p>
             </div>
             <button
-              onClick={() => console.log('Book appointment clicked')}
+              onClick={() => setShowBookingForm(true)}
               className="mt-4 md:mt-0 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -254,7 +390,7 @@ const AppointmentsPage = () => {
                 <h3 className="text-lg font-medium text-gray-900 mb-2">No appointments yet</h3>
                 <p className="text-gray-600 mb-4">Book your first appointment to get started</p>
                 <button
-                  onClick={() => console.log('Book appointment clicked')}
+                  onClick={() => setShowBookingForm(true)}
                   className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
                 >
                   Book Appointment
@@ -294,7 +430,7 @@ const AppointmentsPage = () => {
                           {appointment.status === 'pending' && (
                             <>
                               <button
-                                onClick={() => console.log('Edit appointment:', appointment)}
+                                onClick={() => handleEditAppointment(appointment)}
                                 className="px-4 py-2 text-blue-600 border border-blue-600 rounded-lg hover:bg-blue-50 transition-colors"
                               >
                                 Edit
@@ -400,7 +536,7 @@ const AppointmentsPage = () => {
                       <button
                         onClick={() => {
                           setShowDetailsModal(false);
-                          console.log('Edit appointment:', selectedAppointment);
+                          handleEditAppointment(selectedAppointment);
                         }}
                         className="px-4 py-2 text-blue-600 border border-blue-600 rounded-lg hover:bg-blue-50 transition-colors"
                       >
@@ -480,6 +616,278 @@ const AppointmentsPage = () => {
                     Yes, Cancel
                   </button>
                 </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Booking Form Modal */}
+        {showBookingForm && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div className="bg-white rounded-xl max-w-md w-full shadow-2xl">
+              <div className="p-6">
+                <div className="flex justify-between items-center mb-6">
+                  <h2 className="text-2xl font-bold text-gray-900">Book New Appointment</h2>
+                  <button
+                    onClick={() => setShowBookingForm(false)}
+                    className="text-gray-500 hover:text-gray-700 transition-colors"
+                  >
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+
+                <form onSubmit={handleBookingSubmit} className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Date</label>
+                      <input
+                        type="date"
+                        min={getTomorrowDate()}
+                        value={bookingData.date}
+                        onChange={(e) => setBookingData(prev => ({ ...prev, date: e.target.value }))}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Time</label>
+                      <select
+                        value={bookingData.time}
+                        onChange={(e) => setBookingData(prev => ({ ...prev, time: e.target.value }))}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        required
+                      >
+                        <option value="">Select time</option>
+                        {timeSlots.map(time => (
+                          <option key={time} value={time}>{time}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Service</label>
+                    <select
+                      value={bookingData.service}
+                      onChange={(e) => {
+                        const service = services.find(s => s.id === e.target.value);
+                        setBookingData(prev => ({ 
+                          ...prev, 
+                          service: e.target.value,
+                          serviceName: service?.name || ''
+                        }));
+                      }}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      required
+                    >
+                      <option value="">Select service</option>
+                      {services.map(service => (
+                        <option key={service.id} value={service.id}>
+                          {service.name} - {service.price} ({service.duration})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Doctor</label>
+                    <select
+                      value={bookingData.doctor}
+                      onChange={(e) => setBookingData(prev => ({ ...prev, doctor: e.target.value }))}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      required
+                    >
+                      <option value="">Select doctor</option>
+                      {doctors.map(doctor => (
+                        <option key={doctor.id} value={doctor.name}>
+                          {doctor.name} - {doctor.specialty}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Location</label>
+                    <select
+                      value={bookingData.location}
+                      onChange={(e) => setBookingData(prev => ({ ...prev, location: e.target.value }))}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      required
+                    >
+                      <option value="">Select location</option>
+                      {locations.map(location => (
+                        <option key={location.id} value={location.name}>
+                          {location.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Notes (Optional)</label>
+                    <textarea
+                      value={bookingData.description}
+                      onChange={(e) => setBookingData(prev => ({ ...prev, description: e.target.value }))}
+                      placeholder="Any additional notes or concerns"
+                      rows={3}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+
+                  <div className="flex space-x-3 pt-6">
+                    <button
+                      type="button"
+                      onClick={() => setShowBookingForm(false)}
+                      className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                    >
+                      Book Appointment
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Edit Form Modal */}
+        {showEditForm && editingAppointment && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div className="bg-white rounded-xl max-w-md w-full shadow-2xl">
+              <div className="p-6">
+                <div className="flex justify-between items-center mb-6">
+                  <h2 className="text-2xl font-bold text-gray-900">Edit Appointment</h2>
+                  <button
+                    onClick={() => setShowEditForm(false)}
+                    className="text-gray-500 hover:text-gray-700 transition-colors"
+                  >
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+
+                <form onSubmit={handleEditSubmit} className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Date</label>
+                      <input
+                        type="date"
+                        min={getTomorrowDate()}
+                        value={editData.date}
+                        onChange={(e) => setEditData(prev => ({ ...prev, date: e.target.value }))}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Time</label>
+                      <select
+                        value={editData.time}
+                        onChange={(e) => setEditData(prev => ({ ...prev, time: e.target.value }))}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        required
+                      >
+                        <option value="">Select time</option>
+                        {timeSlots.map(time => (
+                          <option key={time} value={time}>{time}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Service</label>
+                    <select
+                      value={editData.service}
+                      onChange={(e) => {
+                        const service = services.find(s => s.id === e.target.value);
+                        setEditData(prev => ({ 
+                          ...prev, 
+                          service: e.target.value,
+                          serviceName: service?.name || ''
+                        }));
+                      }}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      required
+                    >
+                      <option value="">Select service</option>
+                      {services.map(service => (
+                        <option key={service.id} value={service.id}>
+                          {service.name} - {service.price} ({service.duration})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Doctor</label>
+                    <select
+                      value={editData.doctor}
+                      onChange={(e) => setEditData(prev => ({ ...prev, doctor: e.target.value }))}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      required
+                    >
+                      <option value="">Select doctor</option>
+                      {doctors.map(doctor => (
+                        <option key={doctor.id} value={doctor.name}>
+                          {doctor.name} - {doctor.specialty}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Location</label>
+                    <select
+                      value={editData.location}
+                      onChange={(e) => setEditData(prev => ({ ...prev, location: e.target.value }))}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      required
+                    >
+                      <option value="">Select location</option>
+                      {locations.map(location => (
+                        <option key={location.id} value={location.name}>
+                          {location.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Notes (Optional)</label>
+                    <textarea
+                      value={editData.description}
+                      onChange={(e) => setEditData(prev => ({ ...prev, description: e.target.value }))}
+                      placeholder="Any additional notes or concerns"
+                      rows={3}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+
+                  <div className="flex space-x-3 pt-6">
+                    <button
+                      type="button"
+                      onClick={() => setShowEditForm(false)}
+                      className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                    >
+                      Update Appointment
+                    </button>
+                  </div>
+                </form>
               </div>
             </div>
           </div>
