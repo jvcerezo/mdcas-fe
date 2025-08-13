@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import { post } from '../utils/api';
 import toast, { Toaster } from 'react-hot-toast';
 import { useNavigate, Link } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 
 const SignUpPage = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -55,14 +57,31 @@ const SignUpPage = () => {
         password: formData.password
       });
       
-      // Success toast and redirect
-      toast.success('Account created successfully! Redirecting to login...');
+      // Success toast and option to auto-login or redirect to login
+      toast.success('Account created successfully!');
       console.log('Sign up successful:', response);
       
-      // Redirect to login page after a short delay
-      setTimeout(() => {
-        navigate('/login');
-      }, 2000);
+      // Option 1: Auto-login the user after successful signup
+      if (response.token) {
+        const userData = {
+          name: response.user?.name || response.name || formData.name,
+          email: response.user?.email || response.email || formData.email,
+          id: response.user?.id || response.id
+        };
+        
+        login(userData, response.token);
+        toast.success('Welcome! You are now logged in.');
+        
+        setTimeout(() => {
+          navigate('/');
+        }, 1500);
+      } else {
+        // Option 2: Redirect to login page
+        toast.success('Please login with your new account.');
+        setTimeout(() => {
+          navigate('/login');
+        }, 2000);
+      }
       
     } catch (error) {
       console.error('Sign up failed:', error);

@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
 import { post } from '../utils/api';
 import toast, { Toaster } from 'react-hot-toast';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 
 const LoginPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { login } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -49,14 +52,19 @@ const LoginPage = () => {
       toast.success('Login successful! Welcome back!');
       console.log('Login successful:', response);
       
-      // Store token if provided
-      if (response.token) {
-        localStorage.setItem('authToken', response.token);
-      }
+      // Use the login function from auth context
+      const userData = {
+        name: response.user?.name || response.name || 'User',
+        email: response.user?.email || response.email || formData.email,
+        id: response.user?.id || response.id
+      };
       
-      // Redirect to dashboard/home after a short delay
+      login(userData, response.token);
+      
+      // Redirect to the page they were trying to access, or home
+      const from = location.state?.from?.pathname || '/';
       setTimeout(() => {
-        navigate('/'); // or navigate to dashboard
+        navigate(from);
       }, 1500);
       
     } catch (error) {
