@@ -1,9 +1,34 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { FaFacebook, FaTwitter, FaInstagram, FaTooth, FaShieldAlt, FaUserMd, FaClock, FaStar, FaAward } from 'react-icons/fa';
 import Header from './Header';
+import { useAuth } from '../contexts/AuthContext';
 
 const LandingPage = () => {
+  const { user, loading } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // If user is authenticated and not loading, redirect to dashboard
+    if (!loading && user) {
+      navigate('/dashboard');
+    }
+  }, [user, loading, navigate]);
+
+  // Show loading state while checking authentication
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
+
+  // Only render landing page if user is not authenticated
+  if (user) {
+    return null; // This will be brief as useEffect will redirect
+  }
+
   return (
     <div className="bg-gray-50 text-gray-800 min-h-screen">
       <Header />
