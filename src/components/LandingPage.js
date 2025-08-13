@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const LandingPage = () => {
   return (
@@ -8,9 +9,11 @@ const LandingPage = () => {
           <h1 className="text-3xl font-bold">Maralit Dental Clinic</h1>
           <nav>
             <ul className="flex space-x-4">
-              <li><a href="#services" className="hover:underline">Services</a></li>
-              <li><a href="#about" className="hover:underline">About Us</a></li>
-              <li><a href="#contact" className="hover:underline">Contact</a></li>
+              <li><Link to="/services" className="hover:underline">Services</Link></li>
+              <li><Link to="/about" className="hover:underline">About Us</Link></li>
+              <li><Link to="/contact" className="hover:underline">Contact</Link></li>
+              <li><Link to="/login" className="hover:underline">Login</Link></li>
+              <li><Link to="/signup" className="hover:underline">Sign Up</Link></li>
             </ul>
           </nav>
         </div>
