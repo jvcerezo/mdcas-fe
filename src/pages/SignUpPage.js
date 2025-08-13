@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import { post } from '../utils/api';
+import toast, { Toaster } from 'react-hot-toast';
+import { useNavigate, Link } from 'react-router-dom';
 
 const SignUpPage = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -38,7 +41,10 @@ const SignUpPage = () => {
 
   const handleSignUp = async (e) => {
     e.preventDefault();
-    if (!validateForm()) return;
+    if (!validateForm()) {
+      toast.error('Please fix the errors in the form');
+      return;
+    }
     
     setIsLoading(true);
     try {
@@ -48,10 +54,46 @@ const SignUpPage = () => {
         mobile: formData.mobile,
         password: formData.password
       });
+      
+      // Success toast and redirect
+      toast.success('Account created successfully! Redirecting to login...');
       console.log('Sign up successful:', response);
-      // Add success handling here (e.g., redirect to login or dashboard)
+      
+      // Redirect to login page after a short delay
+      setTimeout(() => {
+        navigate('/login');
+      }, 2000);
+      
     } catch (error) {
       console.error('Sign up failed:', error);
+      
+      // Handle different error scenarios
+      if (error.response) {
+        const { status, data } = error.response;
+        
+        if (status === 400) {
+          if (data.message && data.message.includes('email')) {
+            toast.error('Email already exists. Please use a different email.');
+            setErrors({ email: 'Email already exists' });
+          } else if (data.message && data.message.includes('mobile')) {
+            toast.error('Mobile number already exists. Please use a different number.');
+            setErrors({ mobile: 'Mobile number already exists' });
+          } else {
+            toast.error(data.message || 'Invalid input. Please check your data.');
+          }
+        } else if (status === 409) {
+          toast.error('User already exists. Please try logging in instead.');
+        } else if (status === 500) {
+          toast.error('Server error. Please try again later.');
+        } else {
+          toast.error('Registration failed. Please try again.');
+        }
+      } else if (error.request) {
+        toast.error('Network error. Please check your connection and try again.');
+      } else {
+        toast.error('An unexpected error occurred. Please try again.');
+      }
+      
       setErrors({ submit: 'Registration failed. Please try again.' });
     } finally {
       setIsLoading(false);
@@ -60,6 +102,30 @@ const SignUpPage = () => {
 
   return (
     <div className="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen flex items-center justify-center py-8 px-4">
+      <Toaster 
+        position="top-right"
+        toastOptions={{
+          duration: 4000,
+          style: {
+            background: '#363636',
+            color: '#fff',
+          },
+          success: {
+            duration: 4000,
+            iconTheme: {
+              primary: '#10B981',
+              secondary: '#fff',
+            },
+          },
+          error: {
+            duration: 5000,
+            iconTheme: {
+              primary: '#EF4444',
+              secondary: '#fff',
+            },
+          },
+        }}
+      />
       <div className="max-w-sm w-full">
         <div className="bg-white shadow-xl rounded-xl p-6 border border-gray-100">
           {/* Header */}
@@ -229,9 +295,9 @@ const SignUpPage = () => {
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-600">
               Already have an account?{' '}
-              <a href="/login" className="font-medium text-blue-600 hover:text-blue-500 transition-colors">
+              <Link to="/login" className="font-medium text-blue-600 hover:text-blue-500 transition-colors">
                 Sign in
-              </a>
+              </Link>
             </p>
           </div>
         </div>
