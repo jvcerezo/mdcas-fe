@@ -33,9 +33,15 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = (userData, token) => {
-    localStorage.setItem('authToken', token);
-    localStorage.setItem('userData', JSON.stringify(userData));
-    setUser(userData);
+    console.log('AuthContext login called with:', { userData, token });
+    if (token) {
+      localStorage.setItem('authToken', token);
+      localStorage.setItem('userData', JSON.stringify(userData));
+      setUser(userData);
+      console.log('Token stored successfully:', token.substring(0, 20) + '...');
+    } else {
+      console.error('No token provided to login function');
+    }
   };
 
   const logout = () => {

@@ -52,6 +52,7 @@ const LoginPage = () => {
       // Success toast and redirect
       toast.success('Login successful! Welcome back!');
       console.log('Login successful:', response);
+      console.log('Token received:', response.token);
       
       // Use the login function from auth context
       const userData = {
@@ -60,7 +61,17 @@ const LoginPage = () => {
         id: response.user?.id || response.id
       };
       
+      console.log('Storing user data:', userData);
       login(userData, response.token);
+      
+      // Verify token was stored
+      setTimeout(() => {
+        const storedToken = localStorage.getItem('authToken');
+        console.log('Token verification after login:', !!storedToken);
+        if (storedToken) {
+          console.log('Stored token preview:', storedToken.substring(0, 50) + '...');
+        }
+      }, 100);
       
       // Redirect to the page they were trying to access, or home
       const from = location.state?.from?.pathname || '/';
@@ -73,7 +84,7 @@ const LoginPage = () => {
       
       // Handle different error scenarios
       if (error.response) {
-        const { status, data } = error.response;
+        const { status } = error.response;
         
         if (status === 401) {
           toast.error('Invalid email or password. Please try again.');

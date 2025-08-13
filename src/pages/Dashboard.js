@@ -1,9 +1,15 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import Header from '../components/Header';
 
 const Dashboard = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
+
+  const handleBookAppointment = () => {
+    navigate('/appointments');
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -95,7 +101,10 @@ const Dashboard = () => {
             <div className="bg-white rounded-lg shadow-sm border p-6">
               <h2 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h2>
               <div className="space-y-3">
-                <button className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors">
+                <button 
+                  onClick={handleBookAppointment}
+                  className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors"
+                >
                   Book New Appointment
                 </button>
                 <button className="w-full border border-gray-300 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-50 transition-colors">

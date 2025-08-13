@@ -8,6 +8,7 @@ import LandingPage from './components/LandingPage';
 import LoginPage from './pages/LoginPage';
 import SignUpPage from './pages/SignUpPage';
 import Dashboard from './pages/Dashboard';
+import AppointmentsPage from './pages/AppointmentsPage';
 
 const rootElement = document.getElementById('root');
 const root = createRoot(rootElement);
@@ -56,9 +57,7 @@ root.render(
             path="/appointments" 
             element={
               <ProtectedRoute requireAuth={true}>
-                <div className="min-h-screen flex items-center justify-center">
-                  <h1 className="text-2xl">Appointments Page - Coming Soon</h1>
-                </div>
+                <AppointmentsPage />
               </ProtectedRoute>
             } 
           />
