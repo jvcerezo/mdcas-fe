@@ -1,18 +1,191 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
 
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  @apply bg-gray-100;
+/* ==========================================================================
+   MDCAS design system
+   --------------------------------------------------------------------------
+   A restrained, editorial palette: warm bone paper, near-black ink, and a
+   single deep-teal brand colour used sparingly so it still carries weight.
+   Colour is reserved for meaning — branch identity and schedule status — and
+   the rest of the interface is built from whitespace, hairlines and type.
+
+   Type pairing: Fraunces (optical-size serif) for display, Inter for UI.
+   ========================================================================== */
+
+@theme {
+  /* Warm neutrals — the paper the whole site is printed on. */
+  --color-bone-50: #fdfcfa;
+  --color-bone-100: #faf8f4;
+  --color-bone-200: #f3f0ea;
+  --color-bone-300: #e8e3d9;
+  --color-bone-400: #d5cec0;
+
+  /* Warm near-blacks. Pure #000 reads cheap against bone. */
+  --color-ink-400: #8a857c;
+  --color-ink-500: #6b665e;
+  --color-ink-600: #4a463f;
+  --color-ink-700: #33302b;
+  --color-ink-800: #22201c;
+  --color-ink-900: #16150f;
+
+  /* Brand — deep teal. */
+  --color-brand-50: #eefaf7;
+  --color-brand-100: #d3f2ea;
+  --color-brand-200: #a9e5d7;
+  --color-brand-300: #71d0be;
+  --color-brand-400: #3fb3a0;
+  --color-brand-500: #229685;
+  --color-brand-600: #14786c;
+  --color-brand-700: #116058;
+  --color-brand-800: #124d47;
+  --color-brand-900: #11403c;
+
+  /* Branch accents. Each branch keeps one hue everywhere it appears. */
+  --color-branch-teal: #14786c;
+  --color-branch-teal-soft: #eefaf7;
+  --color-branch-indigo: #4f46b8;
+  --color-branch-indigo-soft: #eef0fc;
+  --color-branch-amber: #a8681a;
+  --color-branch-amber-soft: #fdf4e7;
+
+  /* Schedule status. Deliberately muted — a calendar of loud blocks is
+     unreadable, and these tile hundreds of times on one screen. */
+  --color-slot-open: #e7f5ef;
+  --color-slot-open-ink: #0f5f4a;
+  --color-slot-open-line: #bfe3d5;
+  --color-slot-filling: #fdf1dd;
+  --color-slot-filling-ink: #8a5a12;
+  --color-slot-filling-line: #f0dcb8;
+  --color-slot-full: #fbe9e9;
+  --color-slot-full-ink: #a13a3a;
+  --color-slot-full-line: #f0cfcf;
+  --color-slot-none: #f4f2ee;
+  --color-slot-none-ink: #8a857c;
+  --color-slot-none-line: #e5e1d8;
+
+  --font-display: 'Fraunces', ui-serif, Georgia, serif;
+  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.875rem;
+  --radius-xl: 1.25rem;
+
+  /* Shadows are barely-there. Depth comes from hairlines, not drop shadows. */
+  --shadow-hair: 0 1px 2px rgb(22 21 15 / 0.04);
+  --shadow-soft: 0 1px 3px rgb(22 21 15 / 0.05), 0 8px 24px -12px rgb(22 21 15 / 0.12);
+  --shadow-lift: 0 2px 6px rgb(22 21 15 / 0.06), 0 20px 40px -20px rgb(22 21 15 / 0.22);
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    background-color: var(--color-bone-100);
+    color: var(--color-ink-800);
+    font-family: var(--font-sans);
+    font-feature-settings: 'cv05' 1, 'ss03' 1;
+  }
+
+  /* Optical sizing is the whole point of Fraunces — let it do its job. */
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    font-optical-sizing: auto;
+    letter-spacing: -0.015em;
+    color: var(--color-ink-900);
+  }
+
+  /* A visible, branded focus ring everywhere. Never remove it — the staff
+     portal is used at speed and keyboard navigation matters there. */
+  :focus-visible {
+    outline: 2px solid var(--color-brand-600);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  ::selection {
+    background-color: var(--color-brand-200);
+    color: var(--color-ink-900);
+  }
+
+  /* Tabular figures keep time columns and prices from shifting as they change. */
+  time,
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+@layer components {
+  /* Hairline rule used to separate sections without a heavy border. */
+  .hairline {
+    border-color: color-mix(in srgb, var(--color-ink-900) 8%, transparent);
+  }
+
+  /* The small uppercase label above a section heading. */
+  .eyebrow {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-brand-600);
+  }
+
+  /* Diagonal hatch marking a day the branch is closed. */
+  .hatch {
+    background-image: repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 5px,
+      color-mix(in srgb, var(--color-ink-900) 5%, transparent) 5px,
+      color-mix(in srgb, var(--color-ink-900) 5%, transparent) 6px
+    );
+  }
+}
+
+@layer utilities {
+  .animate-rise {
+    animation: rise 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .animate-fade {
+    animation: fade 0.35s ease-out both;
+  }
+
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @keyframes fade {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+}
+
+/* Respect the OS setting. Everything here is decorative, so removing it costs
+   nothing functionally. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
