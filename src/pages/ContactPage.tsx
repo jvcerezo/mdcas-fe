@@ -65,24 +65,24 @@ export function ContactPage() {
       {organization ? (
         <Section className="py-12">
           <Container>
-            <div className="flex flex-wrap items-center justify-between gap-6 rounded-[var(--radius-xl)] border border-[var(--color-slot-full-line)] bg-[var(--color-slot-full)] px-7 py-6">
+            <div className="flex flex-wrap items-center justify-between gap-6 rounded-[var(--radius-xl)] border border-[var(--color-danger-line)] bg-[var(--color-danger)] px-7 py-6">
               <div className="flex gap-4">
                 <TriangleAlert
-                  className="mt-0.5 h-5 w-5 shrink-0 text-[var(--color-slot-full-ink)]"
+                  className="mt-0.5 h-5 w-5 shrink-0 text-[var(--color-danger-ink)]"
                   aria-hidden
                 />
                 <div>
-                  <h2 className="text-base font-medium text-[var(--color-slot-full-ink)]">
+                  <h2 className="text-base font-medium text-[var(--color-danger-ink)]">
                     Dental emergency
                   </h2>
-                  <p className="mt-1 text-sm text-[var(--color-slot-full-ink)]/80">
+                  <p className="mt-1 text-sm text-[var(--color-danger-ink)]/80">
                     Severe pain, swelling, a knocked-out tooth or bleeding that will not stop.
                   </p>
                 </div>
               </div>
               <a
                 href={`tel:${organization.emergencyHotline.replace(/[^\d+]/g, '')}`}
-                className="inline-flex h-11 items-center gap-2 rounded-full bg-[var(--color-slot-full-ink)] px-6 text-sm font-medium text-white transition-opacity hover:opacity-90"
+                className="inline-flex h-11 items-center gap-2 rounded-full bg-[var(--color-danger-ink)] px-6 text-sm font-medium text-white transition-opacity hover:opacity-90"
               >
                 <Phone className="h-3.5 w-3.5" aria-hidden />
                 <span className="tabular">{organization.emergencyHotline}</span>

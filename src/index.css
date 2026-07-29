@@ -52,20 +52,36 @@
   --color-branch-amber: #c2790f;
   --color-branch-amber-soft: #fef6e9;
 
-  /* Schedule status. Muted on purpose — these tile hundreds of times on one
-     screen, and saturated blocks make a calendar unreadable. */
-  --color-slot-open: #e7f7ef;
-  --color-slot-open-ink: #0a7a52;
-  --color-slot-open-line: #b3e6cd;
-  --color-slot-filling: #fef4e2;
-  --color-slot-filling-ink: #b0730c;
-  --color-slot-filling-line: #f6dcae;
-  --color-slot-full: #fdecec;
-  --color-slot-full-ink: #c0392f;
-  --color-slot-full-line: #f7cdc9;
-  --color-slot-none: #f1f5f9;
-  --color-slot-none-ink: #8fa0b4;
-  --color-slot-none-line: #e2eaf2;
+  /* Schedule status.
+     ------------------------------------------------------------------
+     Only three colours carry meaning here — brand teal, amber, neutral —
+     and they tile hundreds of times across one month, so all three are
+     kept low-saturation. Two deliberate choices:
+
+     1. "Open" is the brand teal rather than a generic green, so the one
+        colour the eye should hunt for is the same colour as the brand.
+     2. "Fully booked" is NEUTRAL, not red. A booked clinic is a healthy
+        clinic, not an error state — red made the calendar read as a wall
+        of warnings and fought the teal. Danger red is reserved for real
+        destructive actions (see --color-danger-*).                     */
+  --color-slot-open: #e4f6f3;
+  --color-slot-open-ink: #0a6b66;
+  --color-slot-open-line: #b2e2db;
+  --color-slot-filling: #fdf3e3;
+  --color-slot-filling-ink: #a06710;
+  --color-slot-filling-line: #f0dcb6;
+  --color-slot-full: #eaeff4;
+  --color-slot-full-ink: #5d6e80;
+  --color-slot-full-line: #d3dde7;
+  --color-slot-none: #f6f8fa;
+  --color-slot-none-ink: #9aa8b6;
+  --color-slot-none-line: #e6ecf2;
+
+  /* Real danger — destructive actions, validation errors, cancellations.
+     Kept out of the calendar entirely. */
+  --color-danger: #fdecec;
+  --color-danger-ink: #c0392f;
+  --color-danger-line: #f7cdc9;
 
   --font-display: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
   --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;

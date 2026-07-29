@@ -1,9 +1,13 @@
 /**
  * The public month calendar.
  *
- * Every cell summarises one day as a small stack of hour bars — a sparkline of
- * how busy the branch is — so a whole month reads at a glance. Selecting a day
- * opens the hour-by-hour breakdown beneath.
+ * Each cell is a date and one slim meter — a segment per open hour, tinted by
+ * how busy that hour is. That single graphic is the whole point: a month's
+ * shape is legible at a glance without reading anything.
+ *
+ * Everything else that used to live in a cell (a fraction, a second label) was
+ * repeating what the meter already said, so it is gone. Detail belongs in the
+ * day panel, not tiled thirty times.
  *
  * Nothing here can display patient information: `PublicDay` and `PublicSlot`
  * carry only counts and a status.
@@ -15,16 +19,16 @@ import type { PublicDay, PublicSlotStatus } from '@/types';
 
 const WEEKDAY_LABELS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
-/** Monday-first column index for a weekday, since PH clinics run Mon–Sat. */
+/** Monday-first column index, since the clinics run Mon–Sat. */
 function columnFor(day: number): number {
   return day === 0 ? 6 : day - 1;
 }
 
-const BAR_TONES: Record<PublicSlotStatus, string> = {
-  available: 'bg-[var(--color-slot-open-line)]',
-  limited: 'bg-[var(--color-slot-filling-line)]',
-  full: 'bg-[var(--color-slot-full-line)]',
-  unavailable: 'bg-[var(--color-slot-none-line)]',
+const METER_TONES: Record<PublicSlotStatus, string> = {
+  available: 'bg-[var(--color-slot-open-ink)]/55',
+  limited: 'bg-[var(--color-slot-filling-ink)]/45',
+  full: 'bg-[var(--color-slot-full-ink)]/30',
+  unavailable: 'bg-surface-200',
 };
 
 export function MonthGrid({
@@ -41,33 +45,31 @@ export function MonthGrid({
   const leadingBlanks = firstDay ? columnFor(weekdayOf(firstDay.date)) : 0;
 
   return (
-    <div>
-      <div className="grid grid-cols-7 gap-1.5 sm:gap-2">
-        {WEEKDAY_LABELS.map((label) => (
-          <div
-            key={label}
-            className="pb-2 text-center text-[0.6875rem] font-semibold tracking-[0.1em] text-ink-400 uppercase"
-          >
-            <span className="hidden sm:inline">{label}</span>
-            <span className="sm:hidden">{label[0]}</span>
-          </div>
-        ))}
+    <div className="grid grid-cols-7 gap-1.5 sm:gap-2">
+      {WEEKDAY_LABELS.map((label) => (
+        <div
+          key={label}
+          className="pb-2 text-center text-[0.6875rem] font-semibold tracking-[0.08em] text-ink-400 uppercase"
+        >
+          <span className="hidden sm:inline">{label}</span>
+          <span className="sm:hidden">{label[0]}</span>
+        </div>
+      ))}
 
-        {Array.from({ length: leadingBlanks }, (_, index) => (
-          <div key={`blank-${index}`} aria-hidden />
-        ))}
+      {Array.from({ length: leadingBlanks }, (_, index) => (
+        <div key={`blank-${index}`} aria-hidden />
+      ))}
 
-        {days.map((day) => (
-          <DayCell
-            key={day.date}
-            day={day}
-            isToday={day.date === today}
-            isPast={day.date < today}
-            isSelected={day.date === selectedDate}
-            onSelect={onSelect}
-          />
-        ))}
-      </div>
+      {days.map((day) => (
+        <DayCell
+          key={day.date}
+          day={day}
+          isToday={day.date === today}
+          isPast={day.date < today}
+          isSelected={day.date === selectedDate}
+          onSelect={onSelect}
+        />
+      ))}
     </div>
   );
 }
@@ -86,13 +88,12 @@ function DayCell({
   onSelect: (date: string) => void;
 }) {
   const dayNumber = Number(day.date.slice(8, 10));
-  const disabled = day.closed;
 
   return (
     <button
       type="button"
-      onClick={() => !disabled && onSelect(day.date)}
-      disabled={disabled}
+      onClick={() => !day.closed && onSelect(day.date)}
+      disabled={day.closed}
       aria-pressed={isSelected}
       aria-label={
         day.closed
@@ -100,70 +101,66 @@ function DayCell({
           : `${day.dayName} ${dayNumber}, ${day.availableSlots} of ${day.totalSlots} hours open`
       }
       className={cx(
-        'group relative flex aspect-square flex-col rounded-[var(--radius-md)] border p-1.5 text-left transition-all duration-200 sm:p-2.5',
-        disabled
-          ? 'hatch cursor-not-allowed border-surface-200 bg-surface-100/60'
-          : 'border-[color-mix(in_srgb,var(--color-ink-900)_9%,transparent)] bg-white hover:border-ink-400 hover:shadow-[var(--shadow-hair)]',
-        isSelected && 'ring-2 ring-brand-600 ring-offset-1 ring-offset-surface-50',
-        // Past days stay legible but visibly recede.
-        isPast && !disabled && 'opacity-55',
+        'group relative flex aspect-square flex-col justify-between rounded-[var(--radius-md)] border p-1.5 text-left transition-all duration-200 sm:p-2.5',
+        day.closed
+          ? 'hatch cursor-not-allowed border-surface-200 bg-surface-50'
+          : 'border-surface-200 bg-white hover:border-brand-300 hover:shadow-[var(--shadow-hair)]',
+        isSelected && '!border-brand-500 bg-brand-50 ring-2 ring-brand-500/25',
+        isPast && !day.closed && !isSelected && 'opacity-50',
       )}
     >
-      <span className="flex items-center justify-between">
-        <span
-          className={cx(
-            'text-xs font-medium tabular sm:text-sm',
-            isToday ? 'text-brand-700' : disabled ? 'text-ink-400' : 'text-ink-700',
-          )}
-        >
-          {dayNumber}
-        </span>
-        {isToday ? (
-          <span className="h-1.5 w-1.5 rounded-full bg-brand-600" aria-hidden />
-        ) : null}
+      <span
+        className={cx(
+          'inline-flex h-6 min-w-6 items-center justify-center rounded-full text-xs font-semibold tabular sm:text-sm',
+          isToday
+            ? 'bg-brand-600 text-white'
+            : day.closed
+              ? 'text-ink-300'
+              : isSelected
+                ? 'text-brand-800'
+                : 'text-ink-600',
+        )}
+      >
+        {dayNumber}
       </span>
 
-      {day.closed ? (
-        <span className="mt-auto hidden text-[0.625rem] leading-tight text-ink-400 sm:block">
-          Closed
+      {/* One segment per open hour. The only graphic in the cell. */}
+      {!day.closed ? (
+        <span className="flex gap-[2px]" aria-hidden>
+          {day.slots.map((slot) => (
+            <span
+              key={slot.start}
+              className={cx('h-1.5 flex-1 rounded-full sm:h-2', METER_TONES[slot.status])}
+            />
+          ))}
         </span>
-      ) : (
-        <>
-          {/* One thin bar per open hour — the day's shape at a glance. */}
-          <span className="mt-auto flex gap-px" aria-hidden>
-            {day.slots.map((slot) => (
-              <span
-                key={slot.start}
-                className={cx('h-4 flex-1 rounded-[1px] sm:h-5', BAR_TONES[slot.status])}
-              />
-            ))}
-          </span>
-          <span className="mt-1.5 hidden text-[0.625rem] leading-none text-ink-400 tabular sm:block">
-            {day.availableSlots}/{day.totalSlots} open
-          </span>
-        </>
-      )}
+      ) : null}
     </button>
   );
 }
 
-/** The shared legend. Wording is kept identical to the API's own legend. */
+/**
+ * The legend. Four entries — the calendar only ever uses four tones, and a
+ * fifth was one more thing to decode for no added information.
+ */
 export function ScheduleLegend({ className }: { className?: string }) {
   const entries: Array<PublicSlotStatus | 'closed'> = [
     'available',
     'limited',
     'full',
-    'unavailable',
     'closed',
   ];
 
   return (
-    <div className={cx('flex flex-wrap items-center gap-x-6 gap-y-3', className)}>
+    <div className={cx('flex flex-wrap items-center gap-x-5 gap-y-2', className)}>
       {entries.map((key) => {
         const style = SLOT_STYLES[key];
         return (
           <span key={key} className="inline-flex items-center gap-2 text-xs text-ink-500">
-            <span className={cx('h-3 w-3 shrink-0 rounded-sm border', style.swatch)} aria-hidden />
+            <span
+              className={cx('h-2.5 w-6 shrink-0 rounded-full border', style.swatch)}
+              aria-hidden
+            />
             {style.label}
           </span>
         );

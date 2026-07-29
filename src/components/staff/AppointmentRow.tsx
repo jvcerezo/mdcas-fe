@@ -111,7 +111,7 @@ export function AppointmentRow({
           <button
             type="button"
             onClick={() => onCancel(appointment)}
-            className="inline-flex h-8 items-center gap-1.5 rounded-full border border-[var(--color-slot-full-line)] px-3 text-xs text-[var(--color-slot-full-ink)] transition-colors hover:bg-[var(--color-slot-full)]"
+            className="inline-flex h-8 items-center gap-1.5 rounded-full border border-[var(--color-danger-line)] px-3 text-xs text-[var(--color-danger-ink)] transition-colors hover:bg-[var(--color-danger)]"
           >
             <X className="h-3 w-3" aria-hidden />
             Cancel

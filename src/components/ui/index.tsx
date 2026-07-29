@@ -93,7 +93,7 @@ const BUTTON_VARIANTS: Record<ButtonVariant, string> = {
     'bg-white text-ink-700 border border-surface-300 hover:border-brand-300 hover:text-brand-700 hover:bg-brand-50',
   ghost: 'text-ink-500 hover:text-brand-700 hover:bg-brand-50',
   danger:
-    'bg-white text-[var(--color-slot-full-ink)] border border-[var(--color-slot-full-line)] hover:bg-[var(--color-slot-full)]',
+    'bg-white text-[var(--color-danger-ink)] border border-[var(--color-danger-line)] hover:bg-[var(--color-danger)]',
 };
 
 const BUTTON_SIZES: Record<ButtonSize, string> = {
@@ -213,12 +213,12 @@ export function Field({
     <label className={cx('block', className)}>
       <span className="mb-1.5 flex items-baseline gap-1.5 text-sm font-medium text-ink-700">
         {label}
-        {required ? <span className="text-[var(--color-slot-full-ink)]">*</span> : null}
+        {required ? <span className="text-[var(--color-danger-ink)]">*</span> : null}
         {hint ? <span className="text-xs font-normal text-ink-400">{hint}</span> : null}
       </span>
       {children}
       {error ? (
-        <span className="mt-1.5 block text-xs text-[var(--color-slot-full-ink)]">{error}</span>
+        <span className="mt-1.5 block text-xs text-[var(--color-danger-ink)]">{error}</span>
       ) : null}
     </label>
   );
@@ -259,7 +259,7 @@ export function ErrorState({
 }) {
   return (
     <div className="flex flex-col items-center justify-center gap-4 py-24 text-center">
-      <AlertCircle className="h-6 w-6 text-[var(--color-slot-full-ink)]" aria-hidden />
+      <AlertCircle className="h-6 w-6 text-[var(--color-danger-ink)]" aria-hidden />
       <p className="max-w-md text-sm text-ink-600">{message}</p>
       {onRetry ? (
         <Button variant="secondary" size="sm" onClick={onRetry}>

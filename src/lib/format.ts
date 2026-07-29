@@ -214,6 +214,13 @@ export interface SlotStyle {
   swatch: string;
 }
 
+/**
+ * The calendar's entire colour vocabulary — three meaningful tones plus a
+ * hatch for closed. `unavailable` deliberately shares the neutral of `full`:
+ * to someone deciding whether to phone, "nobody on duty" and "everyone booked"
+ * are the same answer, and giving them separate colours only added a tone to
+ * decode.
+ */
 export const SLOT_STYLES: Record<PublicSlotStatus | 'closed', SlotStyle> = {
   available: {
     label: 'Open',
@@ -237,7 +244,7 @@ export const SLOT_STYLES: Record<PublicSlotStatus | 'closed', SlotStyle> = {
     swatch: 'bg-[var(--color-slot-full)] border-[var(--color-slot-full-line)]',
   },
   unavailable: {
-    label: 'No clinician',
+    label: 'No clinician on duty',
     description: 'The branch is open, but nobody is rostered this hour.',
     className:
       'bg-[var(--color-slot-none)] text-[var(--color-slot-none-ink)] border-[var(--color-slot-none-line)]',
@@ -246,8 +253,8 @@ export const SLOT_STYLES: Record<PublicSlotStatus | 'closed', SlotStyle> = {
   closed: {
     label: 'Closed',
     description: 'The branch is closed on this day.',
-    className: 'hatch bg-surface-100 text-ink-400 border-surface-200',
-    swatch: 'hatch bg-surface-100 border-surface-200',
+    className: 'hatch bg-surface-50 text-ink-400 border-surface-200',
+    swatch: 'hatch bg-surface-50 border-surface-200',
   },
 };
 
@@ -280,6 +287,6 @@ export const STATUS_BADGES: Record<string, string> = {
   booked: 'bg-brand-50 text-brand-700 border-brand-200',
   confirmed: 'bg-[var(--color-slot-open)] text-[var(--color-slot-open-ink)] border-[var(--color-slot-open-line)]',
   completed: 'bg-surface-100 text-ink-600 border-surface-200',
-  cancelled: 'bg-[var(--color-slot-full)] text-[var(--color-slot-full-ink)] border-[var(--color-slot-full-line)]',
+  cancelled: 'bg-[var(--color-danger)] text-[var(--color-danger-ink)] border-[var(--color-danger-line)]',
   'no-show': 'bg-[var(--color-slot-filling)] text-[var(--color-slot-filling-ink)] border-[var(--color-slot-filling-line)]',
 };

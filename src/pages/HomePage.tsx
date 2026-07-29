@@ -381,7 +381,7 @@ function CalendarPreview() {
   const tone: Record<string, string> = {
     available: 'bg-[var(--color-slot-open)] border-[var(--color-slot-open-line)]',
     limited: 'bg-[var(--color-slot-filling)] border-[var(--color-slot-filling-line)]',
-    full: 'bg-[var(--color-slot-full)] border-[var(--color-slot-full-line)]',
+    full: 'bg-[var(--color-danger)] border-[var(--color-danger-line)]',
     closed: 'hatch bg-surface-100 border-surface-200',
   };
 

@@ -1,118 +1,96 @@
 /**
- * Hour-by-hour breakdown for one day at one branch — the public view.
+ * Hour-by-hour availability for one day at one branch — the public view.
  *
- * Shows only how busy each hour is. There is no patient information in the
- * data this renders, by design.
+ * Each hour is a single row: the time, and one tinted bar carrying both the
+ * status label and the free-chair count. The previous version had four
+ * elements per row (bar, badge, count, time) all restating the same fact,
+ * which is what made a ten-hour day look like a wall of noise.
+ *
+ * There is no patient information in the data this renders, by design.
  */
 
-import { Phone } from 'lucide-react';
+import { CalendarOff } from 'lucide-react';
 
-import { Card, cx } from '@/components/ui';
+import { cx } from '@/components/ui';
 import { SLOT_STYLES, formatDate, formatTime, todayISO } from '@/lib/format';
-import type { PublicDay, PublicMonthSchedule } from '@/types';
+import type { PublicDay } from '@/types';
 
-export function DayDetail({
-  day,
-  clinic,
-}: {
-  day: PublicDay;
-  clinic: PublicMonthSchedule['clinic'];
-}) {
+export function DayDetail({ day, phone }: { day: PublicDay; phone: string }) {
   const isPast = day.date < todayISO();
 
-  return (
-    <Card className="overflow-hidden">
-      <div className="flex flex-wrap items-center justify-between gap-4 border-b px-6 py-5 hairline">
-        <div>
-          <h3 className="text-lg">{formatDate(day.date)}</h3>
-          <p className="mt-1 text-sm text-ink-400">
-            {day.closed
-              ? (day.note ?? 'Closed')
-              : `${clinic.shortName} · ${formatTime(day.opens ?? '')} – ${formatTime(day.closes ?? '')}`}
-          </p>
+  if (day.closed) {
+    return (
+      <div className="rounded-[var(--radius-xl)] border border-surface-200 bg-white shadow-[var(--shadow-hair)]">
+        <Header day={day} />
+        <div className="hatch flex flex-col items-center gap-2 rounded-b-[var(--radius-xl)] px-6 py-14 text-center">
+          <CalendarOff className="h-5 w-5 text-ink-400" aria-hidden />
+          <p className="text-sm text-ink-500">Closed on {day.dayName}s</p>
+          {day.note ? <p className="text-xs text-ink-400">{day.note}</p> : null}
         </div>
-
-        {!day.closed ? (
-          <a
-            href={`tel:${clinic.phone.replace(/[^\d+]/g, '')}`}
-            className="inline-flex h-10 items-center gap-2 rounded-full bg-brand-600 px-5 text-sm font-medium text-white shadow-[var(--shadow-brand)] transition-colors hover:bg-brand-700"
-          >
-            <Phone className="h-3.5 w-3.5" aria-hidden />
-            <span className="tabular">{clinic.phone}</span>
-          </a>
-        ) : null}
       </div>
+    );
+  }
 
-      {day.closed ? (
-        <div className="hatch px-6 py-16 text-center">
-          <p className="text-sm text-ink-500">
-            {clinic.shortName} is closed on {day.dayName}s.
-          </p>
-          {day.note ? <p className="mt-1.5 text-xs text-ink-400">{day.note}</p> : null}
-        </div>
-      ) : (
-        <>
-          {isPast ? (
-            <p className="border-b bg-surface-100/50 px-6 py-2.5 text-xs text-ink-400 hairline">
-              This date has passed — shown for reference.
-            </p>
-          ) : null}
+  return (
+    <div className="rounded-[var(--radius-xl)] border border-surface-200 bg-white shadow-[var(--shadow-hair)]">
+      <Header day={day} />
 
-          <ul className="divide-y divide-[color-mix(in_srgb,var(--color-ink-900)_7%,transparent)]">
-            {day.slots.map((slot) => {
-              const style = SLOT_STYLES[slot.status];
-              const free = Math.max(0, slot.capacity - slot.booked);
+      {isPast ? (
+        <p className="border-b border-surface-200 bg-surface-50 px-5 py-2 text-xs text-ink-400">
+          This date has passed — shown for reference.
+        </p>
+      ) : null}
 
-              return (
-                <li
-                  key={slot.start}
-                  className="flex items-center gap-4 px-6 py-3.5 transition-colors hover:bg-surface-0"
-                >
-                  <span className="w-24 shrink-0 text-sm font-medium text-ink-700 tabular">
-                    {formatTime(slot.start)}
-                  </span>
+      <ul className="space-y-1.5 p-3 sm:p-4">
+        {day.slots.map((slot) => {
+          const style = SLOT_STYLES[slot.status];
+          const free = Math.max(0, slot.capacity - slot.booked);
 
-                  {/* The bar is the primary signal; the badge names it for
-                      anyone who cannot rely on colour alone. */}
-                  <span
-                    className={cx(
-                      'h-7 flex-1 rounded-[var(--radius-sm)] border',
-                      style.className,
-                    )}
-                    aria-hidden
-                  />
+          return (
+            <li key={slot.start} className="flex items-center gap-3">
+              <span className="w-16 shrink-0 text-right text-xs font-medium text-ink-500 tabular">
+                {formatTime(slot.start)}
+              </span>
 
-                  <span
-                    className={cx(
-                      'w-32 shrink-0 rounded-full border px-2.5 py-1 text-center text-xs font-medium',
-                      style.className,
-                    )}
-                  >
-                    {style.label}
-                  </span>
+              <span
+                className={cx(
+                  'flex flex-1 items-center justify-between gap-3 rounded-[var(--radius-md)] border px-3.5 py-2.5',
+                  style.className,
+                )}
+              >
+                <span className="text-sm font-semibold">{style.label}</span>
+                <span className="text-xs tabular opacity-70">
+                  {slot.capacity === 0 ? '—' : `${free}/${slot.capacity} free`}
+                </span>
+              </span>
+            </li>
+          );
+        })}
+      </ul>
 
-                  <span className="hidden w-28 shrink-0 text-right text-xs text-ink-400 tabular sm:block">
-                    {slot.capacity === 0
-                      ? '—'
-                      : `${free} of ${slot.capacity} free`}
-                  </span>
-                </li>
-              );
-            })}
-          </ul>
+      <p className="border-t border-surface-200 px-5 py-3.5 text-xs leading-relaxed text-ink-400">
+        Updates as the front desk books appointments. To reserve a slot, call{' '}
+        <a
+          href={`tel:${phone.replace(/[^\d+]/g, '')}`}
+          className="font-medium text-ink-600 underline underline-offset-2"
+        >
+          {phone}
+        </a>
+        . We do not take bookings through this website.
+      </p>
+    </div>
+  );
+}
 
-          <p className="border-t bg-surface-50 px-6 py-4 text-xs leading-relaxed text-ink-400 hairline">
-            Availability updates as the front desk books appointments. To reserve a slot, call{' '}
-            <a
-              href={`tel:${clinic.phone.replace(/[^\d+]/g, '')}`}
-              className="font-medium text-ink-600 underline underline-offset-2"
-            >
-              {clinic.phone}
-            </a>
-            . We do not take bookings through this website.
-          </p>
-        </>
-      )}
-    </Card>
+function Header({ day }: { day: PublicDay }) {
+  return (
+    <div className="flex items-baseline justify-between gap-4 border-b border-surface-200 px-5 py-4">
+      <h3 className="text-base font-bold">{formatDate(day.date)}</h3>
+      {!day.closed && day.opens && day.closes ? (
+        <span className="text-xs text-ink-400 tabular">
+          {formatTime(day.opens)} – {formatTime(day.closes)}
+        </span>
+      ) : null}
+    </div>
   );
 }

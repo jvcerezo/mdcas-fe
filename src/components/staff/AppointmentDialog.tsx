@@ -377,7 +377,7 @@ export function AppointmentDialog({
           {error ? (
             <p
               role="alert"
-              className="rounded-[var(--radius-md)] border border-[var(--color-slot-full-line)] bg-[var(--color-slot-full)] px-3.5 py-2.5 text-sm text-[var(--color-slot-full-ink)]"
+              className="rounded-[var(--radius-md)] border border-[var(--color-danger-line)] bg-[var(--color-danger)] px-3.5 py-2.5 text-sm text-[var(--color-danger-ink)]"
             >
               {error}
             </p>

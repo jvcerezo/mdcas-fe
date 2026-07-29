@@ -1,33 +1,37 @@
 /**
- * The centralized schedule page.
+ * The centralized availability page.
  *
- * One month, one branch at a time, switched with tabs. Everything shown here
- * is public and redacted — hours are marked open, filling up, fully booked or
- * closed, and nothing else is exposed.
+ * Layout intent — the previous version stacked three separate control bands
+ * (branch tabs, month navigation, legend) above the calendar, so nothing had
+ * priority and everything competed. This version has one decision per band:
+ *
+ *   1. Which branch?      — full-width selector cards, with location context
+ *   2. Which day?         — the calendar, month navigation inside its header
+ *   3. What do I do now?  — map, directions, phone, and the day's hours
+ *
+ * Everything shown is public and redacted: hours are marked open, filling up,
+ * fully booked or closed, and nothing else is exposed.
  */
 
 import { useEffect, useState } from 'react';
-import { ChevronLeft, ChevronRight, Info } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Info, MapPin } from 'lucide-react';
 
+import { BranchPanel } from '@/components/schedule/BranchPanel';
 import { DayDetail } from '@/components/schedule/DayDetail';
 import { MonthGrid, ScheduleLegend } from '@/components/schedule/MonthGrid';
-import {
-  Button,
-  Card,
-  Container,
-  ErrorState,
-  LoadingState,
-  Section,
-  cx,
-} from '@/components/ui';
+import { Container, ErrorState, LoadingState, Spinner, cx } from '@/components/ui';
 import { useApi } from '@/hooks/useApi';
 import { api } from '@/lib/api';
-import { ACCENTS, currentMonth, formatMonth, shiftMonth, todayISO } from '@/lib/format';
+import { currentMonth, formatMonth, isOpenNow, shiftMonth, todayISO } from '@/lib/format';
 
 export function SchedulePage() {
   const [month, setMonth] = useState(currentMonth());
-  const [activeClinic, setActiveClinic] = useState<string | null>(null);
+  const [activeSlug, setActiveSlug] = useState<string | null>(null);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
+
+  // Full clinic records carry the coordinates, address and hours the map and
+  // directions panel needs — the schedule payload deliberately stays minimal.
+  const { data: clinics } = useApi((signal) => api.clinics(signal), []);
 
   const { data, loading, error, reload } = useApi(
     (signal) => api.allSchedules(month, signal),
@@ -36,13 +40,14 @@ export function SchedulePage() {
 
   const schedules = data?.clinics ?? [];
   const current =
-    schedules.find((schedule) => schedule.clinic.slug === activeClinic) ?? schedules[0];
+    schedules.find((schedule) => schedule.clinic.slug === activeSlug) ?? schedules[0];
+  const currentClinic = clinics?.find((clinic) => clinic.slug === current?.clinic.slug);
 
-  // Default to the first branch once data lands, and keep the selected day
-  // valid when the month changes underneath it.
+  // Default to the first branch, and keep the selected day valid when the
+  // month or branch changes underneath it.
   useEffect(() => {
     if (!current) return;
-    if (!activeClinic) setActiveClinic(current.clinic.slug);
+    if (!activeSlug) setActiveSlug(current.clinic.slug);
 
     const today = todayISO();
     const stillValid =
@@ -55,144 +60,163 @@ export function SchedulePage() {
         current.days.find((day) => !day.closed);
       setSelectedDate(preferred?.date ?? null);
     }
-  }, [current, activeClinic, selectedDate]);
+  }, [current, activeSlug, selectedDate]);
 
   const selectedDay = current?.days.find((day) => day.date === selectedDate) ?? null;
-  const isCurrentMonth = month === currentMonth();
 
   return (
     <>
-      <Section className="pb-0">
+      {/* Page header */}
+      <section className="border-b border-surface-200 bg-white">
         <Container>
-          <p className="eyebrow mb-4">Availability</p>
-          <div className="flex flex-wrap items-end justify-between gap-8">
-            <div className="max-w-2xl">
-              <h1 className="text-4xl leading-[1.1] sm:text-5xl">
-                When each branch is free
-              </h1>
-              <p className="mt-5 text-lg leading-relaxed text-ink-500">
-                A live view of every hour across our three branches. Find a slot that suits
-                you, then call that branch to book — appointments are made by phone.
-              </p>
-            </div>
+          <div className="py-14 sm:py-16">
+            <p className="eyebrow mb-3">Availability</p>
+            <h1 className="max-w-2xl text-4xl leading-[1.1] sm:text-5xl">
+              Find a free slot, then call
+            </h1>
+            <p className="mt-4 max-w-xl text-lg leading-relaxed text-ink-500">
+              Live availability at all three branches. Appointments are booked by phone, so
+              pick a time that suits you and ring the clinic directly.
+            </p>
           </div>
         </Container>
-      </Section>
+      </section>
 
-      <Section className="pt-10">
-        <Container>
-          {/* Branch tabs */}
-          <div
-            className="flex flex-wrap gap-2 border-b pb-5 hairline"
-            role="tablist"
-            aria-label="Branch"
-          >
-            {schedules.map((schedule) => {
-              const isActive = schedule.clinic.slug === current?.clinic.slug;
-              const accent = ACCENTS[schedule.clinic.accentColor];
-              return (
-                <button
-                  key={schedule.clinic.slug}
-                  type="button"
-                  role="tab"
-                  aria-selected={isActive}
-                  onClick={() => setActiveClinic(schedule.clinic.slug)}
-                  className={cx(
-                    'inline-flex items-center gap-2.5 rounded-full border px-5 py-2.5 text-sm font-medium transition-all',
-                    isActive
-                      ? 'border-brand-600 bg-brand-600 text-white shadow-[var(--shadow-brand)]'
-                      : 'border-[color-mix(in_srgb,var(--color-ink-900)_12%,transparent)] bg-white text-ink-600 hover:border-ink-400',
-                  )}
-                >
+      <Container className="py-10">
+        {/* 1 — Branch selector */}
+        <div role="tablist" aria-label="Branch" className="grid gap-3 sm:grid-cols-3">
+          {schedules.map((schedule) => {
+            const clinic = clinics?.find((entry) => entry.slug === schedule.clinic.slug);
+            const isActive = schedule.clinic.slug === current?.clinic.slug;
+            const open = clinic ? isOpenNow(clinic.hours) : false;
+
+            return (
+              <button
+                key={schedule.clinic.slug}
+                type="button"
+                role="tab"
+                aria-selected={isActive}
+                onClick={() => setActiveSlug(schedule.clinic.slug)}
+                className={cx(
+                  'group rounded-[var(--radius-lg)] border p-4 text-left transition-all duration-200',
+                  isActive
+                    ? 'border-brand-500 bg-brand-50 shadow-[var(--shadow-hair)] ring-2 ring-brand-500/20'
+                    : 'border-surface-200 bg-white hover:border-brand-300 hover:shadow-[var(--shadow-hair)]',
+                )}
+              >
+                <div className="flex items-start justify-between gap-3">
                   <span
                     className={cx(
-                      'h-2 w-2 rounded-full',
-                      isActive ? 'bg-surface-0' : accent.bg,
+                      'text-[0.9375rem] font-bold',
+                      isActive ? 'text-brand-800' : 'text-ink-800',
                     )}
+                  >
+                    {schedule.clinic.shortName}
+                  </span>
+                  <span
+                    className={cx(
+                      'mt-0.5 h-2 w-2 shrink-0 rounded-full',
+                      open ? 'bg-[var(--color-slot-open-ink)]' : 'bg-surface-300',
+                    )}
+                    aria-hidden
                   />
-                  {schedule.clinic.shortName}
-                </button>
-              );
-            })}
-          </div>
+                </div>
 
-          {/* Month navigation */}
-          <div className="mt-8 flex flex-wrap items-center justify-between gap-6">
-            <div className="flex items-center gap-2">
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={() => setMonth(shiftMonth(month, -1))}
-                aria-label="Previous month"
-                className="!h-9 !w-9 !px-0"
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </Button>
-              <span className="min-w-44 text-center font-display text-xl">
-                {formatMonth(month)}
-              </span>
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={() => setMonth(shiftMonth(month, 1))}
-                aria-label="Next month"
-                className="!h-9 !w-9 !px-0"
-              >
-                <ChevronRight className="h-4 w-4" />
-              </Button>
-              {!isCurrentMonth ? (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setMonth(currentMonth())}
-                  className="ml-1"
+                <span
+                  className={cx(
+                    'mt-1.5 flex items-center gap-1.5 text-xs',
+                    isActive ? 'text-brand-700' : 'text-ink-400',
+                  )}
                 >
-                  Today
-                </Button>
-              ) : null}
-            </div>
+                  <MapPin className="h-3 w-3 shrink-0" aria-hidden />
+                  {clinic
+                    ? `${clinic.address.barangay ?? clinic.address.line1}, ${clinic.address.city}`
+                    : 'Los Baños'}
+                </span>
+              </button>
+            );
+          })}
+        </div>
 
-            <ScheduleLegend />
-          </div>
+        {loading && !current ? (
+          <LoadingState label="Loading availability" />
+        ) : error ? (
+          <ErrorState message={error} onRetry={reload} />
+        ) : current ? (
+          <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)] lg:items-start">
+            {/* 2 — Calendar */}
+            <div className="rounded-[var(--radius-xl)] border border-surface-200 bg-white shadow-[var(--shadow-hair)]">
+              <div className="flex items-center justify-between gap-4 border-b border-surface-200 px-4 py-3.5 sm:px-5">
+                <div className="flex items-center gap-1">
+                  <button
+                    type="button"
+                    onClick={() => setMonth(shiftMonth(month, -1))}
+                    aria-label="Previous month"
+                    className="grid h-9 w-9 place-items-center rounded-full text-ink-500 transition-colors hover:bg-surface-100 hover:text-ink-800"
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                  </button>
+                  <h2 className="min-w-40 text-center text-base font-bold sm:min-w-44 sm:text-lg">
+                    {formatMonth(month)}
+                  </h2>
+                  <button
+                    type="button"
+                    onClick={() => setMonth(shiftMonth(month, 1))}
+                    aria-label="Next month"
+                    className="grid h-9 w-9 place-items-center rounded-full text-ink-500 transition-colors hover:bg-surface-100 hover:text-ink-800"
+                  >
+                    <ChevronRight className="h-4 w-4" />
+                  </button>
+                </div>
 
-          {loading && !current ? (
-            <LoadingState label="Loading availability" />
-          ) : error ? (
-            <ErrorState message={error} onRetry={reload} />
-          ) : current ? (
-            <div className="mt-8 grid gap-8 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] lg:items-start">
-              <Card className={cx('p-5 sm:p-7', loading && 'opacity-60 transition-opacity')}>
+                <div className="flex items-center gap-2">
+                  {loading ? <Spinner className="h-3.5 w-3.5 text-ink-400" /> : null}
+                  {month !== currentMonth() ? (
+                    <button
+                      type="button"
+                      onClick={() => setMonth(currentMonth())}
+                      className="rounded-full px-3 py-1.5 text-sm font-medium text-brand-700 transition-colors hover:bg-brand-50"
+                    >
+                      Today
+                    </button>
+                  ) : null}
+                </div>
+              </div>
+
+              <div className={cx('p-3 sm:p-5', loading && 'opacity-60 transition-opacity')}>
                 <MonthGrid
                   days={current.days}
                   selectedDate={selectedDate}
                   onSelect={setSelectedDate}
                 />
-              </Card>
+              </div>
 
-              <div className="lg:sticky lg:top-28">
-                {selectedDay ? (
-                  <DayDetail day={selectedDay} clinic={current.clinic} />
-                ) : (
-                  <Card className="px-6 py-16 text-center">
-                    <p className="text-sm text-ink-400">
-                      Select a day to see hour-by-hour availability.
-                    </p>
-                  </Card>
-                )}
-
-                <div className="mt-5 flex gap-3 rounded-[var(--radius-lg)] border bg-surface-100/50 p-4 hairline">
-                  <Info className="mt-0.5 h-4 w-4 shrink-0 text-ink-400" aria-hidden />
-                  <p className="text-xs leading-relaxed text-ink-500">
-                    Availability reflects how many dentists are on duty and already booked.
-                    Patient details are never shown here. Call the branch to reserve a slot —
-                    the front desk will confirm it and it will appear on this calendar.
-                  </p>
-                </div>
+              <div className="border-t border-surface-200 px-4 py-3.5 sm:px-5">
+                <ScheduleLegend />
               </div>
             </div>
-          ) : null}
-        </Container>
-      </Section>
+
+            {/* 3 — Where and how to book */}
+            <div className="space-y-5 lg:sticky lg:top-24">
+              {currentClinic ? (
+                <BranchPanel clinic={currentClinic} date={selectedDate} />
+              ) : null}
+
+              {selectedDay ? (
+                <DayDetail day={selectedDay} phone={current.clinic.phone} />
+              ) : null}
+
+              <div className="flex gap-3 rounded-[var(--radius-lg)] border border-surface-200 bg-surface-50 p-4">
+                <Info className="mt-0.5 h-4 w-4 shrink-0 text-ink-400" aria-hidden />
+                <p className="text-xs leading-relaxed text-ink-500">
+                  Availability reflects how many dentists are on duty and already booked.
+                  Patient details are never shown here.
+                </p>
+              </div>
+            </div>
+          </div>
+        ) : null}
+      </Container>
     </>
   );
 }
