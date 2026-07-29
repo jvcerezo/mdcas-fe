@@ -117,12 +117,13 @@ export function HomePage() {
 
         {organization ? (
           <Container className="relative pb-16 sm:pb-20">
-            <dl className="grid grid-cols-2 overflow-hidden rounded-[var(--radius-2xl)] border border-surface-200 bg-white shadow-[var(--shadow-soft)] lg:grid-cols-4">
+            {/* Separators come from a 1px grid gap showing the container
+                colour through, rather than per-cell border rules. That stays
+                correct at both two and four columns without nth-child
+                gymnastics that break when the number of stats changes. */}
+            <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-[var(--radius-2xl)] border border-surface-200 bg-surface-200 shadow-[var(--shadow-soft)] lg:grid-cols-4">
               {organization.stats.map((stat) => (
-                <div
-                  key={stat.label}
-                  className="border-surface-200 px-6 py-8 text-center not-last:border-r odd:border-r even:border-r-0 lg:even:border-r [&:nth-child(-n+2)]:border-b lg:[&:nth-child(-n+2)]:border-b-0 lg:last:border-r-0"
-                >
+                <div key={stat.label} className="bg-white px-4 py-7 text-center sm:px-6 sm:py-8">
                   <dd className="font-display text-3xl font-extrabold text-brand-600 tabular sm:text-4xl">
                     {stat.value}
                   </dd>

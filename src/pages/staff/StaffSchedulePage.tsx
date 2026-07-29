@@ -140,7 +140,7 @@ export function StaffSchedulePage() {
           >
             <ChevronLeft className="h-4 w-4" />
           </Button>
-          <span className="min-w-40 text-center font-display text-lg">
+          <span className="truncate text-center font-display text-base font-bold sm:min-w-40 sm:text-lg">
             {formatMonth(month)}
           </span>
           <Button

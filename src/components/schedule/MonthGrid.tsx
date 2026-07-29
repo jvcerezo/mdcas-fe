@@ -31,6 +31,14 @@ const METER_TONES: Record<PublicSlotStatus, string> = {
   unavailable: 'bg-surface-200',
 };
 
+/** One status standing in for a whole day, for the compact mobile bar. */
+function summarise(day: PublicDay): PublicSlotStatus {
+  if (day.totalSlots === 0) return 'unavailable';
+  if (day.availableSlots === 0) return 'full';
+  if (day.availableSlots < day.totalSlots / 2) return 'limited';
+  return 'available';
+}
+
 export function MonthGrid({
   days,
   selectedDate,
@@ -45,7 +53,9 @@ export function MonthGrid({
   const leadingBlanks = firstDay ? columnFor(weekdayOf(firstDay.date)) : 0;
 
   return (
-    <div className="grid grid-cols-7 gap-1.5 sm:gap-2">
+    // Tighter gaps on a phone buy back width for the cells themselves, which
+    // are the tap targets.
+    <div className="grid grid-cols-7 gap-1 sm:gap-2">
       {WEEKDAY_LABELS.map((label) => (
         <div
           key={label}
@@ -101,7 +111,7 @@ function DayCell({
           : `${day.dayName} ${dayNumber}, ${day.availableSlots} of ${day.totalSlots} hours open`
       }
       className={cx(
-        'group relative flex aspect-square flex-col justify-between rounded-[var(--radius-md)] border p-1.5 text-left transition-all duration-200 sm:p-2.5',
+        'group relative flex aspect-square flex-col justify-between rounded-[var(--radius-md)] border p-1 text-left transition-all duration-200 sm:p-2.5',
         day.closed
           ? 'hatch cursor-not-allowed border-surface-200 bg-surface-50'
           : 'border-surface-200 bg-white hover:border-brand-300 hover:shadow-[var(--shadow-hair)]',
@@ -124,16 +134,35 @@ function DayCell({
         {dayNumber}
       </span>
 
-      {/* One segment per open hour. The only graphic in the cell. */}
+      {/* The day's shape, at two densities.
+          On tablet and up there is room for one segment per open hour. On a
+          phone a cell is roughly 38px wide, where ten segments plus their gaps
+          collapse into an unreadable smear — so below `sm` it becomes a single
+          proportional bar: how much of the day is still open, tinted by how
+          busy the day is overall. */}
       {!day.closed ? (
-        <span className="flex gap-[2px]" aria-hidden>
-          {day.slots.map((slot) => (
+        <>
+          <span className="hidden gap-[2px] sm:flex" aria-hidden>
+            {day.slots.map((slot) => (
+              <span
+                key={slot.start}
+                className={cx('h-2 flex-1 rounded-full', METER_TONES[slot.status])}
+              />
+            ))}
+          </span>
+
+          <span
+            className="block h-1.5 w-full overflow-hidden rounded-full bg-surface-200 sm:hidden"
+            aria-hidden
+          >
             <span
-              key={slot.start}
-              className={cx('h-1.5 flex-1 rounded-full sm:h-2', METER_TONES[slot.status])}
+              className={cx('block h-full rounded-full', METER_TONES[summarise(day)])}
+              style={{
+                width: `${day.totalSlots === 0 ? 0 : (day.availableSlots / day.totalSlots) * 100}%`,
+              }}
             />
-          ))}
-        </span>
+          </span>
+        </>
       ) : null}
     </button>
   );

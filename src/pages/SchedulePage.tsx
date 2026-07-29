@@ -146,36 +146,38 @@ export function SchedulePage() {
           <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)] lg:items-start">
             {/* 2 — Calendar */}
             <div className="rounded-[var(--radius-xl)] border border-surface-200 bg-white shadow-[var(--shadow-hair)]">
-              <div className="flex items-center justify-between gap-4 border-b border-surface-200 px-4 py-3.5 sm:px-5">
-                <div className="flex items-center gap-1">
+              <div className="flex items-center justify-between gap-2 border-b border-surface-200 px-2 py-3 sm:gap-4 sm:px-5 sm:py-3.5">
+                <div className="flex min-w-0 items-center gap-0.5 sm:gap-1">
                   <button
                     type="button"
                     onClick={() => setMonth(shiftMonth(month, -1))}
                     aria-label="Previous month"
-                    className="grid h-9 w-9 place-items-center rounded-full text-ink-500 transition-colors hover:bg-surface-100 hover:text-ink-800"
+                    className="grid h-10 w-10 shrink-0 place-items-center rounded-full text-ink-500 transition-colors hover:bg-surface-100 hover:text-ink-800"
                   >
                     <ChevronLeft className="h-4 w-4" />
                   </button>
-                  <h2 className="min-w-40 text-center text-base font-bold sm:min-w-44 sm:text-lg">
+                  {/* No fixed minimum on a phone — "September 2026" plus two
+                      arrows and the Today button would otherwise overflow. */}
+                  <h2 className="truncate text-center text-[0.9375rem] font-bold sm:min-w-44 sm:text-lg">
                     {formatMonth(month)}
                   </h2>
                   <button
                     type="button"
                     onClick={() => setMonth(shiftMonth(month, 1))}
                     aria-label="Next month"
-                    className="grid h-9 w-9 place-items-center rounded-full text-ink-500 transition-colors hover:bg-surface-100 hover:text-ink-800"
+                    className="grid h-10 w-10 shrink-0 place-items-center rounded-full text-ink-500 transition-colors hover:bg-surface-100 hover:text-ink-800"
                   >
                     <ChevronRight className="h-4 w-4" />
                   </button>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex shrink-0 items-center gap-2">
                   {loading ? <Spinner className="h-3.5 w-3.5 text-ink-400" /> : null}
                   {month !== currentMonth() ? (
                     <button
                       type="button"
                       onClick={() => setMonth(currentMonth())}
-                      className="rounded-full px-3 py-1.5 text-sm font-medium text-brand-700 transition-colors hover:bg-brand-50"
+                      className="rounded-full px-3 py-2 text-sm font-medium text-brand-700 transition-colors hover:bg-brand-50"
                     >
                       Today
                     </button>
@@ -183,7 +185,7 @@ export function SchedulePage() {
                 </div>
               </div>
 
-              <div className={cx('p-3 sm:p-5', loading && 'opacity-60 transition-opacity')}>
+              <div className={cx('p-2 sm:p-5', loading && 'opacity-60 transition-opacity')}>
                 <MonthGrid
                   days={current.days}
                   selectedDate={selectedDate}
