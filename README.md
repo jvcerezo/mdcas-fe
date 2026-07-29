@@ -153,12 +153,44 @@ npm run build      # outputs to dist/
 ```
 
 It is a single-page app, so **the host must rewrite unknown paths to
-`index.html`** — otherwise a refresh on `/schedule` or `/clinics/lipa` returns a
-404. On Netlify, a `_redirects` file with `/* /index.html 200`; on Vercel, a
-catch-all rewrite; on nginx, `try_files $uri /index.html`.
+`index.html`** — otherwise a refresh on `/schedule` or `/clinics/bayog` returns
+a 404. On Netlify, a `_redirects` file with `/* /index.html 200`; on nginx,
+`try_files $uri /index.html`. Vercel is handled by `vercel.json` in this repo.
 
-Set `VITE_API_URL` at build time, and add the deployed origin to `FRONTEND_URL`
-on the API.
+### Vercel — migrating from the old Create React App setup
+
+`vercel.json` sets the framework, build command, output directory and SPA
+rewrites, so it overrides the dashboard. In **Settings → Build & Deployment**,
+clear any overrides left from CRA so the file wins. What changed:
+
+| Setting | Was (CRA) | Now (Vite) |
+|---|---|---|
+| Framework Preset | Create React App | Vite |
+| Output Directory | `build` | **`dist`** |
+| Build Command | `react-scripts build` | `npm run build` |
+| Node version | 16/18 | 20 or later |
+
+**Environment variables must be renamed.** Vite only exposes variables prefixed
+`VITE_`, so a leftover `REACT_APP_API_URL` is silently ignored and the app ends
+up calling `/api` on its own domain:
+
+| Was | Now |
+|---|---|
+| `REACT_APP_API_URL` | `VITE_API_URL` |
+
+Delete the `REACT_APP_*` entries — they do nothing now, and leaving them around
+makes it look like the URL is configured when it is not.
+
+`VITE_API_URL` is **inlined at build time**, not read at runtime. Changing it
+requires a redeploy; there is no restart-to-pick-up-new-env.
+
+Finally, add the deployed origins to `FRONTEND_URL` on the API, or every
+request will fail CORS. Preview deployments get a new URL per commit, so allow
+them with a wildcard:
+
+```
+FRONTEND_URL=https://maralitdental.ph,https://*.vercel.app
+```
 
 ---
 
