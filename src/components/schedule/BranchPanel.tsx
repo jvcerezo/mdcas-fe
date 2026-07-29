@@ -1,12 +1,27 @@
 /**
- * Everything you need to actually get to a branch and call it: a map pin,
- * the address, directions, and today's hours.
+ * Everything you need to actually get to a branch and call it: a map, the
+ * address, directions, and the selected day's hours.
  *
- * The map is an OpenStreetMap embed rather than Google Maps. Google's Embed
- * API needs a billable key, and the keyless `output=embed` URL is undocumented
- * and can break without warning. OSM's export embed is stable, free, and needs
- * no key. Directions still hand off to Google Maps, which is what people
- * actually navigate with here.
+ * THE PIN IS ONLY EVER AS GOOD AS THE DATA BEHIND IT.
+ *
+ * Two modes, in order of preference:
+ *
+ *   1. `clinic.coordinates` is set — an exact OpenStreetMap marker. Use this
+ *      for production. OSM's export embed is free, keyless and stable, unlike
+ *      Google's Embed API which needs a billable key.
+ *
+ *   2. No coordinates — Google geocodes the street address and drops its own
+ *      pin. Less precise, but it derives from a real address rather than a
+ *      guessed latitude, so it lands on the right street instead of an
+ *      arbitrary point. This is the honest fallback while addresses are still
+ *      being confirmed.
+ *
+ * Never hardcode approximate coordinates to make mode 1 fire. A confidently
+ * wrong pin on a clinic site sends someone in pain to the wrong building; an
+ * approximate pin that is visibly derived from the address does not.
+ *
+ * Directions always hand off to Google Maps, which is what people navigate
+ * with here.
  */
 
 import { Clock, ExternalLink, MapPin, Navigation, Phone } from 'lucide-react';
@@ -15,20 +30,28 @@ import { Card, cx } from '@/components/ui';
 import { formatAddress, formatTimeRange, isOpenNow, weekdayOf } from '@/lib/format';
 import type { Clinic } from '@/types';
 
-/** A tight bounding box around the pin, so the embed opens at street level. */
-function embedUrl(lat: number, lng: number): string {
+/** The full postal address, used as the geocoding query. */
+function addressQuery(clinic: Clinic): string {
+  return `${clinic.name}, ${formatAddress(clinic.address)}`;
+}
+
+/** Mode 1: a tight bounding box around the exact pin, at street level. */
+function osmEmbedUrl(lat: number, lng: number): string {
   const pad = 0.004;
   const bbox = [lng - pad, lat - pad / 2, lng + pad, lat + pad / 2].join('%2C');
   return `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${lat}%2C${lng}`;
 }
 
+/** Mode 2: let Google geocode the address and place its own marker. */
+function googleEmbedUrl(clinic: Clinic): string {
+  return `https://maps.google.com/maps?q=${encodeURIComponent(addressQuery(clinic))}&z=16&output=embed`;
+}
+
 function directionsUrl(clinic: Clinic): string {
-  // Prefer coordinates — a street address in Los Baños is often ambiguous.
   if (clinic.coordinates) {
     return `https://www.google.com/maps/dir/?api=1&destination=${clinic.coordinates.lat},${clinic.coordinates.lng}`;
   }
-  const query = encodeURIComponent(`${clinic.name}, ${formatAddress(clinic.address)}`);
-  return `https://www.google.com/maps/dir/?api=1&destination=${query}`;
+  return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(addressQuery(clinic))}`;
 }
 
 function largerMapUrl(clinic: Clinic): string {
@@ -36,7 +59,7 @@ function largerMapUrl(clinic: Clinic): string {
     const { lat, lng } = clinic.coordinates;
     return `https://www.openstreetmap.org/?mlat=${lat}&mlon=${lng}#map=17/${lat}/${lng}`;
   }
-  return clinic.mapUrl ?? '#';
+  return clinic.mapUrl ?? `https://maps.google.com/?q=${encodeURIComponent(addressQuery(clinic))}`;
 }
 
 export function BranchPanel({ clinic, date }: { clinic: Clinic; date: string | null }) {
@@ -49,21 +72,30 @@ export function BranchPanel({ clinic, date }: { clinic: Clinic; date: string | n
     <Card className="overflow-hidden">
       {/* Map */}
       <div className="relative aspect-[16/10] w-full bg-surface-100">
-        {clinic.coordinates ? (
-          <iframe
-            key={clinic.slug}
-            title={`Map showing ${clinic.name}`}
-            src={embedUrl(clinic.coordinates.lat, clinic.coordinates.lng)}
-            className="h-full w-full border-0"
-            loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
-          />
-        ) : (
-          <div className="flex h-full flex-col items-center justify-center gap-2 text-ink-400">
-            <MapPin className="h-5 w-5" aria-hidden />
-            <span className="text-xs">Map unavailable for this branch</span>
-          </div>
-        )}
+        <iframe
+          // Re-keying on the slug forces a fresh load when the branch changes;
+          // some browsers keep the previous map otherwise.
+          key={clinic.slug}
+          title={`Map showing ${clinic.name}`}
+          src={
+            clinic.coordinates
+              ? osmEmbedUrl(clinic.coordinates.lat, clinic.coordinates.lng)
+              : googleEmbedUrl(clinic)
+          }
+          className="h-full w-full border-0"
+          loading="lazy"
+          referrerPolicy="no-referrer-when-downgrade"
+        />
+
+        {/* Say so when the pin is geocoded rather than surveyed. Quietly
+            overstating precision is what makes people drive to the wrong
+            place. */}
+        {!clinic.coordinates ? (
+          <span className="absolute top-3 left-3 inline-flex items-center gap-1.5 rounded-full bg-white/95 px-2.5 py-1 text-[0.6875rem] font-medium text-ink-500 shadow-[var(--shadow-hair)] backdrop-blur">
+            <MapPin className="h-3 w-3" aria-hidden />
+            Approximate — call to confirm
+          </span>
+        ) : null}
 
         <a
           href={largerMapUrl(clinic)}
