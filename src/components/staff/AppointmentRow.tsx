@@ -25,7 +25,7 @@ export function AppointmentRow({
   return (
     <li
       className={cx(
-        'group grid gap-4 px-5 py-4 transition-colors hover:bg-bone-100 sm:grid-cols-[7.5rem_1fr_auto] sm:items-center',
+        'group grid gap-4 px-5 py-4 transition-colors hover:bg-surface-50 sm:grid-cols-[7.5rem_1fr_auto] sm:items-center',
         inactive && 'opacity-60',
       )}
     >
@@ -53,7 +53,7 @@ export function AppointmentRow({
           <span
             className={cx(
               'rounded-full border px-2 py-0.5 text-[0.6875rem] font-medium',
-              STATUS_BADGES[appointment.status] ?? 'border-bone-300 bg-bone-200 text-ink-500',
+              STATUS_BADGES[appointment.status] ?? 'border-surface-200 bg-surface-100 text-ink-500',
             )}
           >
             {appointment.status}
@@ -90,7 +90,7 @@ export function AppointmentRow({
         </div>
 
         {appointment.notes ? (
-          <p className="mt-2 flex gap-2 rounded-[var(--radius-sm)] bg-bone-200/70 px-2.5 py-1.5 text-xs leading-relaxed text-ink-600">
+          <p className="mt-2 flex gap-2 rounded-[var(--radius-sm)] bg-surface-100/70 px-2.5 py-1.5 text-xs leading-relaxed text-ink-600">
             <StickyNote className="mt-0.5 h-3 w-3 shrink-0 text-ink-400" aria-hidden />
             {appointment.notes}
           </p>

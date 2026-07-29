@@ -92,7 +92,7 @@ export function AboutPage() {
         </Container>
       </Section>
 
-      <Section className="border-t bg-bone-200/40 hairline">
+      <Section className="border-t bg-surface-100/40 hairline">
         <Container>
           <SectionHeading
             eyebrow="Clinicians"

@@ -102,9 +102,9 @@ function DayCell({
       className={cx(
         'group relative flex aspect-square flex-col rounded-[var(--radius-md)] border p-1.5 text-left transition-all duration-200 sm:p-2.5',
         disabled
-          ? 'hatch cursor-not-allowed border-bone-300 bg-bone-200/60'
+          ? 'hatch cursor-not-allowed border-surface-200 bg-surface-100/60'
           : 'border-[color-mix(in_srgb,var(--color-ink-900)_9%,transparent)] bg-white hover:border-ink-400 hover:shadow-[var(--shadow-hair)]',
-        isSelected && 'ring-2 ring-brand-600 ring-offset-1 ring-offset-bone-100',
+        isSelected && 'ring-2 ring-brand-600 ring-offset-1 ring-offset-surface-50',
         // Past days stay legible but visibly recede.
         isPast && !disabled && 'opacity-55',
       )}

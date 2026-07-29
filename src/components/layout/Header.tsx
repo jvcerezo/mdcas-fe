@@ -40,7 +40,7 @@ export function Header({ hotline }: { hotline?: string }) {
       className={cx(
         'sticky top-0 z-50 transition-all duration-300',
         scrolled
-          ? 'border-b bg-bone-100/85 backdrop-blur-md hairline'
+          ? 'border-b bg-white/90 shadow-[var(--shadow-hair)] backdrop-blur-md hairline'
           : 'border-b border-transparent bg-transparent',
       )}
     >
@@ -49,11 +49,11 @@ export function Header({ hotline }: { hotline?: string }) {
           <Link to="/" className="group flex items-center gap-3" aria-label="Maralit Dental Clinic — home">
             <Mark />
             <span className="flex flex-col leading-none">
-              <span className="font-display text-[1.0625rem] tracking-tight text-ink-900">
+              <span className="font-display text-[1.0625rem] font-extrabold tracking-tight text-ink-900">
                 Maralit Dental
               </span>
-              <span className="mt-1 text-[0.6875rem] tracking-[0.16em] text-ink-400 uppercase">
-                Batangas
+              <span className="mt-1 text-[0.6875rem] font-medium tracking-[0.16em] text-brand-600 uppercase">
+                Los Baños
               </span>
             </span>
           </Link>
@@ -74,7 +74,7 @@ export function Header({ hotline }: { hotline?: string }) {
                   <>
                     {link.label}
                     {isActive ? (
-                      <span className="absolute inset-x-4 -bottom-0.5 h-px bg-brand-600" />
+                      <span className="absolute inset-x-4 -bottom-0.5 h-0.5 rounded-full bg-brand-500" />
                     ) : null}
                   </>
                 )}
@@ -96,7 +96,7 @@ export function Header({ hotline }: { hotline?: string }) {
             <button
               type="button"
               onClick={() => setOpen((value) => !value)}
-              className="inline-flex h-10 w-10 items-center justify-center rounded-full text-ink-700 transition-colors hover:bg-bone-200 lg:hidden"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-full text-ink-700 transition-colors hover:bg-surface-100 lg:hidden"
               aria-expanded={open}
               aria-label={open ? 'Close menu' : 'Open menu'}
             >
@@ -107,7 +107,7 @@ export function Header({ hotline }: { hotline?: string }) {
       </Container>
 
       {open ? (
-        <div className="animate-fade border-t bg-bone-100 hairline lg:hidden">
+        <div className="animate-fade border-t bg-surface-50 hairline lg:hidden">
           <Container className="py-4">
             <nav className="flex flex-col" aria-label="Mobile">
               {NAV_LINKS.map((link) => (
@@ -141,8 +141,8 @@ export function Header({ hotline }: { hotline?: string }) {
 /** The wordmark: a tooth abstracted to two arcs. */
 function Mark() {
   return (
-    <span className="grid h-9 w-9 place-items-center rounded-full bg-ink-900 text-bone-50 transition-transform duration-300 group-hover:scale-105">
-      <svg viewBox="0 0 24 24" className="h-4.5 w-4.5" fill="none" aria-hidden>
+    <span className="grid h-10 w-10 place-items-center rounded-[0.9rem] bg-gradient-to-br from-brand-500 to-brand-700 text-white shadow-[var(--shadow-brand)] transition-transform duration-300 group-hover:scale-105">
+      <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" aria-hidden>
         <path
           d="M6 3.6c-1.9 0-3 1.5-3 3.6 0 2.4.7 4 1.4 6.2.5 1.6.8 3.3 1 5 .1 1.1.6 2 1.5 2 1 0 1.4-.9 1.6-2l.6-3.6c.1-.9.5-1.4 1.4-1.4s1.3.5 1.4 1.4l.6 3.6c.2 1.1.6 2 1.6 2 .9 0 1.4-.9 1.5-2 .2-1.7.5-3.4 1-5C20.3 11.2 21 9.6 21 7.2c0-2.1-1.1-3.6-3-3.6-1.4 0-2.2.5-3.2 1-.9.5-1.7.8-2.8.8s-1.9-.3-2.8-.8c-1-.5-1.8-1-3.2-1Z"
           stroke="currentColor"

@@ -246,8 +246,8 @@ export const SLOT_STYLES: Record<PublicSlotStatus | 'closed', SlotStyle> = {
   closed: {
     label: 'Closed',
     description: 'The branch is closed on this day.',
-    className: 'hatch bg-bone-200 text-ink-400 border-bone-300',
-    swatch: 'hatch bg-bone-200 border-bone-300',
+    className: 'hatch bg-surface-100 text-ink-400 border-surface-200',
+    swatch: 'hatch bg-surface-100 border-surface-200',
   },
 };
 
@@ -279,7 +279,7 @@ export const ACCENTS = {
 export const STATUS_BADGES: Record<string, string> = {
   booked: 'bg-brand-50 text-brand-700 border-brand-200',
   confirmed: 'bg-[var(--color-slot-open)] text-[var(--color-slot-open-ink)] border-[var(--color-slot-open-line)]',
-  completed: 'bg-bone-200 text-ink-600 border-bone-300',
+  completed: 'bg-surface-100 text-ink-600 border-surface-200',
   cancelled: 'bg-[var(--color-slot-full)] text-[var(--color-slot-full-ink)] border-[var(--color-slot-full-line)]',
   'no-show': 'bg-[var(--color-slot-filling)] text-[var(--color-slot-filling-ink)] border-[var(--color-slot-filling-line)]',
 };

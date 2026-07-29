@@ -5,7 +5,7 @@ export function NotFoundPage() {
     <Section>
       <Container>
         <div className="mx-auto max-w-lg py-16 text-center">
-          <p className="font-display text-6xl text-bone-400 tabular">404</p>
+          <p className="font-display text-6xl text-surface-300 tabular">404</p>
           <h1 className="mt-6 text-3xl">We could not find that page</h1>
           <p className="mt-4 leading-relaxed text-ink-500">
             The link may be out of date. Try the availability calendar or one of our three

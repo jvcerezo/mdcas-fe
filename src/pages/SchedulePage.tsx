@@ -100,14 +100,14 @@ export function SchedulePage() {
                   className={cx(
                     'inline-flex items-center gap-2.5 rounded-full border px-5 py-2.5 text-sm font-medium transition-all',
                     isActive
-                      ? 'border-ink-900 bg-ink-900 text-bone-50'
+                      ? 'border-brand-600 bg-brand-600 text-white shadow-[var(--shadow-brand)]'
                       : 'border-[color-mix(in_srgb,var(--color-ink-900)_12%,transparent)] bg-white text-ink-600 hover:border-ink-400',
                   )}
                 >
                   <span
                     className={cx(
                       'h-2 w-2 rounded-full',
-                      isActive ? 'bg-bone-50' : accent.bg,
+                      isActive ? 'bg-surface-0' : accent.bg,
                     )}
                   />
                   {schedule.clinic.shortName}
@@ -180,7 +180,7 @@ export function SchedulePage() {
                   </Card>
                 )}
 
-                <div className="mt-5 flex gap-3 rounded-[var(--radius-lg)] border bg-bone-200/50 p-4 hairline">
+                <div className="mt-5 flex gap-3 rounded-[var(--radius-lg)] border bg-surface-100/50 p-4 hairline">
                   <Info className="mt-0.5 h-4 w-4 shrink-0 text-ink-400" aria-hidden />
                   <p className="text-xs leading-relaxed text-ink-500">
                     Availability reflects how many dentists are on duty and already booked.

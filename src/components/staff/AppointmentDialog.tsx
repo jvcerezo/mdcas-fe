@@ -176,9 +176,9 @@ export function AppointmentDialog({
         role="dialog"
         aria-modal="true"
         aria-label={editing ? 'Edit appointment' : 'New appointment'}
-        className="animate-rise relative max-h-[92vh] w-full overflow-y-auto rounded-t-[var(--radius-xl)] bg-bone-50 shadow-[var(--shadow-lift)] sm:max-w-2xl sm:rounded-[var(--radius-xl)]"
+        className="animate-rise relative max-h-[92vh] w-full overflow-y-auto rounded-t-[var(--radius-xl)] bg-surface-0 shadow-[var(--shadow-lift)] sm:max-w-2xl sm:rounded-[var(--radius-xl)]"
       >
-        <div className="sticky top-0 z-10 flex items-center justify-between border-b bg-bone-50/95 px-6 py-5 backdrop-blur hairline">
+        <div className="sticky top-0 z-10 flex items-center justify-between border-b bg-surface-0/95 px-6 py-5 backdrop-blur hairline">
           <div>
             <h2 className="text-xl">{editing ? 'Edit appointment' : 'New appointment'}</h2>
             <p className="mt-1 text-xs text-ink-400">
@@ -190,7 +190,7 @@ export function AppointmentDialog({
           <button
             type="button"
             onClick={onClose}
-            className="grid h-9 w-9 place-items-center rounded-full text-ink-500 transition-colors hover:bg-bone-200"
+            className="grid h-9 w-9 place-items-center rounded-full text-ink-500 transition-colors hover:bg-surface-100"
             aria-label="Close"
           >
             <X className="h-4 w-4" />

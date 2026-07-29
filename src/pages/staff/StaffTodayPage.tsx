@@ -210,7 +210,7 @@ function Chip({
       className={cx(
         'rounded-full border px-4 py-1.5 text-sm transition-all',
         active
-          ? 'border-ink-900 bg-ink-900 text-bone-50'
+          ? 'border-brand-600 bg-brand-600 text-white shadow-[var(--shadow-brand)]'
           : 'border-[color-mix(in_srgb,var(--color-ink-900)_12%,transparent)] bg-white text-ink-600 hover:border-ink-400',
       )}
     >

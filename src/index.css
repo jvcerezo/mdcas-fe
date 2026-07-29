@@ -1,79 +1,88 @@
 @import 'tailwindcss';
 
 /* ==========================================================================
-   MDCAS design system
+   MDCAS design system — clinical
    --------------------------------------------------------------------------
-   A restrained, editorial palette: warm bone paper, near-black ink, and a
-   single deep-teal brand colour used sparingly so it still carries weight.
-   Colour is reserved for meaning — branch identity and schedule status — and
-   the rest of the interface is built from whitespace, hairlines and type.
+   The look a dental practice should have: clean, bright, calm and obviously
+   medical. Cool white surfaces, a confident teal that reads as clinical rather
+   than corporate, and soft rounded shapes so it feels reassuring instead of
+   sterile.
 
-   Type pairing: Fraunces (optical-size serif) for display, Inter for UI.
+   Colour carries meaning — brand actions, branch identity, and schedule
+   status. Everything else is white cards on a pale surface with soft shadows.
+
+   Type: Plus Jakarta Sans for headings (geometric, friendly, professional),
+   Inter for body and UI.
    ========================================================================== */
 
 @theme {
-  /* Warm neutrals — the paper the whole site is printed on. */
-  --color-bone-50: #fdfcfa;
-  --color-bone-100: #faf8f4;
-  --color-bone-200: #f3f0ea;
-  --color-bone-300: #e8e3d9;
-  --color-bone-400: #d5cec0;
+  /* Cool neutral surfaces. */
+  --color-surface-0: #ffffff;
+  --color-surface-50: #f8fafc;
+  --color-surface-100: #f1f5f9;
+  --color-surface-200: #e8eef4;
+  --color-surface-300: #d8e2ec;
 
-  /* Warm near-blacks. Pure #000 reads cheap against bone. */
-  --color-ink-400: #8a857c;
-  --color-ink-500: #6b665e;
-  --color-ink-600: #4a463f;
-  --color-ink-700: #33302b;
-  --color-ink-800: #22201c;
-  --color-ink-900: #16150f;
+  /* Cool slate text. */
+  --color-ink-300: #b6c2d1;
+  --color-ink-400: #8fa0b4;
+  --color-ink-500: #64748b;
+  --color-ink-600: #475569;
+  --color-ink-700: #334155;
+  --color-ink-800: #1e293b;
+  --color-ink-900: #0f2333;
 
-  /* Brand — deep teal. */
-  --color-brand-50: #eefaf7;
-  --color-brand-100: #d3f2ea;
-  --color-brand-200: #a9e5d7;
-  --color-brand-300: #71d0be;
-  --color-brand-400: #3fb3a0;
-  --color-brand-500: #229685;
-  --color-brand-600: #14786c;
-  --color-brand-700: #116058;
-  --color-brand-800: #124d47;
-  --color-brand-900: #11403c;
+  /* Brand — clinical teal. */
+  --color-brand-50: #effcfa;
+  --color-brand-100: #d5f6f1;
+  --color-brand-200: #aeece5;
+  --color-brand-300: #78dcd3;
+  --color-brand-400: #43c2bb;
+  --color-brand-500: #1fa6a1;
+  --color-brand-600: #0d8683;
+  --color-brand-700: #0e6b6a;
+  --color-brand-800: #115556;
+  --color-brand-900: #123f42;
 
   /* Branch accents. Each branch keeps one hue everywhere it appears. */
-  --color-branch-teal: #14786c;
-  --color-branch-teal-soft: #eefaf7;
-  --color-branch-indigo: #4f46b8;
-  --color-branch-indigo-soft: #eef0fc;
-  --color-branch-amber: #a8681a;
-  --color-branch-amber-soft: #fdf4e7;
+  --color-branch-teal: #0d8683;
+  --color-branch-teal-soft: #effcfa;
+  --color-branch-indigo: #3f5fd0;
+  --color-branch-indigo-soft: #eef2fe;
+  --color-branch-amber: #c2790f;
+  --color-branch-amber-soft: #fef6e9;
 
-  /* Schedule status. Deliberately muted — a calendar of loud blocks is
-     unreadable, and these tile hundreds of times on one screen. */
-  --color-slot-open: #e7f5ef;
-  --color-slot-open-ink: #0f5f4a;
-  --color-slot-open-line: #bfe3d5;
-  --color-slot-filling: #fdf1dd;
-  --color-slot-filling-ink: #8a5a12;
-  --color-slot-filling-line: #f0dcb8;
-  --color-slot-full: #fbe9e9;
-  --color-slot-full-ink: #a13a3a;
-  --color-slot-full-line: #f0cfcf;
-  --color-slot-none: #f4f2ee;
-  --color-slot-none-ink: #8a857c;
-  --color-slot-none-line: #e5e1d8;
+  /* Schedule status. Muted on purpose — these tile hundreds of times on one
+     screen, and saturated blocks make a calendar unreadable. */
+  --color-slot-open: #e7f7ef;
+  --color-slot-open-ink: #0a7a52;
+  --color-slot-open-line: #b3e6cd;
+  --color-slot-filling: #fef4e2;
+  --color-slot-filling-ink: #b0730c;
+  --color-slot-filling-line: #f6dcae;
+  --color-slot-full: #fdecec;
+  --color-slot-full-ink: #c0392f;
+  --color-slot-full-line: #f7cdc9;
+  --color-slot-none: #f1f5f9;
+  --color-slot-none-ink: #8fa0b4;
+  --color-slot-none-line: #e2eaf2;
 
-  --font-display: 'Fraunces', ui-serif, Georgia, serif;
+  --font-display: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
   --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
 
-  --radius-sm: 0.25rem;
-  --radius-md: 0.5rem;
-  --radius-lg: 0.875rem;
-  --radius-xl: 1.25rem;
+  /* Generous, friendly radii — the single biggest cue that this is a clinic
+     and not a broadsheet. */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.625rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+  --radius-2xl: 2rem;
 
-  /* Shadows are barely-there. Depth comes from hairlines, not drop shadows. */
-  --shadow-hair: 0 1px 2px rgb(22 21 15 / 0.04);
-  --shadow-soft: 0 1px 3px rgb(22 21 15 / 0.05), 0 8px 24px -12px rgb(22 21 15 / 0.12);
-  --shadow-lift: 0 2px 6px rgb(22 21 15 / 0.06), 0 20px 40px -20px rgb(22 21 15 / 0.22);
+  /* Soft, cool-tinted elevation. */
+  --shadow-hair: 0 1px 2px rgb(15 35 51 / 0.04);
+  --shadow-soft: 0 1px 2px rgb(15 35 51 / 0.04), 0 8px 24px -10px rgb(15 35 51 / 0.10);
+  --shadow-lift: 0 2px 4px rgb(15 35 51 / 0.05), 0 24px 48px -20px rgb(15 35 51 / 0.20);
+  --shadow-brand: 0 8px 24px -10px rgb(13 134 131 / 0.45);
 }
 
 @layer base {
@@ -84,19 +93,18 @@
   }
 
   body {
-    background-color: var(--color-bone-100);
-    color: var(--color-ink-800);
+    background-color: var(--color-surface-50);
+    color: var(--color-ink-700);
     font-family: var(--font-sans);
-    font-feature-settings: 'cv05' 1, 'ss03' 1;
   }
 
-  /* Optical sizing is the whole point of Fraunces — let it do its job. */
   h1,
   h2,
-  h3 {
+  h3,
+  h4 {
     font-family: var(--font-display);
-    font-optical-sizing: auto;
-    letter-spacing: -0.015em;
+    font-weight: 700;
+    letter-spacing: -0.02em;
     color: var(--color-ink-900);
   }
 
@@ -105,7 +113,7 @@
   :focus-visible {
     outline: 2px solid var(--color-brand-600);
     outline-offset: 2px;
-    border-radius: 2px;
+    border-radius: 4px;
   }
 
   ::selection {
@@ -123,14 +131,15 @@
 @layer components {
   /* Hairline rule used to separate sections without a heavy border. */
   .hairline {
-    border-color: color-mix(in srgb, var(--color-ink-900) 8%, transparent);
+    border-color: var(--color-surface-200);
   }
 
   /* The small uppercase label above a section heading. */
   .eyebrow {
+    font-family: var(--font-display);
     font-size: 0.6875rem;
-    font-weight: 600;
-    letter-spacing: 0.14em;
+    font-weight: 700;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--color-brand-600);
   }
@@ -141,9 +150,18 @@
       45deg,
       transparent,
       transparent 5px,
-      color-mix(in srgb, var(--color-ink-900) 5%, transparent) 5px,
-      color-mix(in srgb, var(--color-ink-900) 5%, transparent) 6px
+      rgb(15 35 51 / 0.045) 5px,
+      rgb(15 35 51 / 0.045) 6px
     );
+  }
+
+  /* Soft tinted circle behind a feature icon. */
+  .icon-chip {
+    display: grid;
+    place-items: center;
+    border-radius: 9999px;
+    background-color: var(--color-brand-50);
+    color: var(--color-brand-600);
   }
 }
 

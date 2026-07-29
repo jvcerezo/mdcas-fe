@@ -35,7 +35,7 @@ export function DayDetail({
         {!day.closed ? (
           <a
             href={`tel:${clinic.phone.replace(/[^\d+]/g, '')}`}
-            className="inline-flex h-10 items-center gap-2 rounded-full bg-ink-900 px-5 text-sm font-medium text-bone-50 transition-colors hover:bg-ink-700"
+            className="inline-flex h-10 items-center gap-2 rounded-full bg-brand-600 px-5 text-sm font-medium text-white shadow-[var(--shadow-brand)] transition-colors hover:bg-brand-700"
           >
             <Phone className="h-3.5 w-3.5" aria-hidden />
             <span className="tabular">{clinic.phone}</span>
@@ -53,7 +53,7 @@ export function DayDetail({
       ) : (
         <>
           {isPast ? (
-            <p className="border-b bg-bone-200/50 px-6 py-2.5 text-xs text-ink-400 hairline">
+            <p className="border-b bg-surface-100/50 px-6 py-2.5 text-xs text-ink-400 hairline">
               This date has passed — shown for reference.
             </p>
           ) : null}
@@ -66,7 +66,7 @@ export function DayDetail({
               return (
                 <li
                   key={slot.start}
-                  className="flex items-center gap-4 px-6 py-3.5 transition-colors hover:bg-bone-50"
+                  className="flex items-center gap-4 px-6 py-3.5 transition-colors hover:bg-surface-0"
                 >
                   <span className="w-24 shrink-0 text-sm font-medium text-ink-700 tabular">
                     {formatTime(slot.start)}
@@ -101,7 +101,7 @@ export function DayDetail({
             })}
           </ul>
 
-          <p className="border-t bg-bone-100 px-6 py-4 text-xs leading-relaxed text-ink-400 hairline">
+          <p className="border-t bg-surface-50 px-6 py-4 text-xs leading-relaxed text-ink-400 hairline">
             Availability updates as the front desk books appointments. To reserve a slot, call{' '}
             <a
               href={`tel:${clinic.phone.replace(/[^\d+]/g, '')}`}

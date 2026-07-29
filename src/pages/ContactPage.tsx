@@ -43,7 +43,7 @@ export function ContactPage() {
           <div className="mt-9 flex flex-wrap gap-3">
             <Link
               to="/schedule"
-              className="inline-flex h-12 items-center gap-2 rounded-full bg-ink-900 px-6 text-sm font-medium text-bone-50 transition-colors hover:bg-ink-700"
+              className="inline-flex h-12 items-center gap-2 rounded-full bg-brand-600 px-6 text-sm font-medium text-white shadow-[var(--shadow-brand)] transition-colors hover:bg-brand-700"
             >
               <CalendarCheck className="h-4 w-4" aria-hidden />
               Check availability first
@@ -118,7 +118,7 @@ export function ContactPage() {
 
                     <a
                       href={`tel:${clinic.phone.replace(/[^\d+]/g, '')}`}
-                      className="mt-5 flex h-12 items-center justify-center gap-2 rounded-full bg-ink-900 text-sm font-medium text-bone-50 transition-colors hover:bg-ink-700"
+                      className="mt-5 flex h-12 items-center justify-center gap-2 rounded-full bg-brand-600 text-sm font-medium text-white shadow-[var(--shadow-brand)] transition-colors hover:bg-brand-700"
                     >
                       <Phone className="h-3.5 w-3.5" aria-hidden />
                       <span className="tabular">{clinic.phone}</span>
@@ -186,7 +186,7 @@ export function ContactPage() {
       </Section>
 
       {/* What to have ready */}
-      <Section className="border-t bg-bone-200/40 hairline">
+      <Section className="border-t bg-surface-100/40 hairline">
         <Container>
           <SectionHeading
             eyebrow="Before you call"

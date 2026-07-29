@@ -31,7 +31,7 @@ export function StaffCard({
         ) : (
           <span
             aria-hidden
-            className="grid h-14 w-14 shrink-0 place-items-center rounded-full bg-bone-200 font-display text-base text-ink-500"
+            className="grid h-14 w-14 shrink-0 place-items-center rounded-full bg-surface-100 font-display text-base text-ink-500"
           >
             {initials(member.name)}
           </span>

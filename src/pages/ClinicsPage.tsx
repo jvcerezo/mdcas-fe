@@ -52,7 +52,7 @@ export function ClinicsPage() {
                         <div className="flex flex-wrap items-center gap-3">
                           <span className={cx('h-1 w-9 rounded-full', accent.bg)} />
                           {clinic.isMainBranch ? (
-                            <Badge className="border-bone-300 bg-bone-200 text-ink-500">
+                            <Badge className="border-surface-200 bg-surface-100 text-ink-500">
                               Main branch
                             </Badge>
                           ) : null}
@@ -60,7 +60,7 @@ export function ClinicsPage() {
                             className={cx(
                               open
                                 ? 'border-[var(--color-slot-open-line)] bg-[var(--color-slot-open)] text-[var(--color-slot-open-ink)]'
-                                : 'border-bone-300 bg-bone-200 text-ink-400',
+                                : 'border-surface-200 bg-surface-100 text-ink-400',
                             )}
                           >
                             {open ? 'Open now' : 'Closed now'}
@@ -93,7 +93,7 @@ export function ClinicsPage() {
                         <div className="mt-9 flex flex-wrap items-center gap-3">
                           <Link
                             to={`/clinics/${clinic.slug}`}
-                            className="inline-flex h-11 items-center gap-2 rounded-full bg-ink-900 px-6 text-sm font-medium text-bone-50 transition-colors hover:bg-ink-700"
+                            className="inline-flex h-11 items-center gap-2 rounded-full bg-brand-600 px-6 text-sm font-medium text-white shadow-[var(--shadow-brand)] transition-colors hover:bg-brand-700"
                           >
                             View this branch
                             <ArrowRight className="h-4 w-4" aria-hidden />
@@ -107,7 +107,7 @@ export function ClinicsPage() {
                         </div>
                       </div>
 
-                      <div className="border-t bg-bone-100/70 p-8 hairline sm:p-10 lg:border-t-0 lg:border-l">
+                      <div className="border-t bg-surface-50/70 p-8 hairline sm:p-10 lg:border-t-0 lg:border-l">
                         <dl className="space-y-6 text-sm">
                           <div className="flex gap-3">
                             <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-ink-400" aria-hidden />

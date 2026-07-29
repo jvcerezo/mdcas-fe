@@ -1,6 +1,16 @@
 import { Fragment } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, ArrowUpRight, CalendarCheck, Clock, MapPin, Phone } from 'lucide-react';
+import {
+  ArrowRight,
+  ArrowUpRight,
+  CalendarCheck,
+  Clock,
+  HeartPulse,
+  MapPin,
+  Phone,
+  ShieldCheck,
+  Wallet,
+} from 'lucide-react';
 
 import {
   Badge,
@@ -33,41 +43,42 @@ export function HomePage() {
       {/* ---------------------------------------------------------------- */}
       {/* Hero                                                              */}
       {/* ---------------------------------------------------------------- */}
-      <section className="relative overflow-hidden">
-        {/* A single soft radial wash instead of a gradient banner — keeps the
-            page feeling like paper rather than a template. */}
+      <section className="relative overflow-hidden bg-white">
+        {/* A soft clinical wash — bright and calm, the way a waiting room should
+            feel. Two tints so it reads as light rather than as a coloured band. */}
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-0 -z-10"
+          className="pointer-events-none absolute inset-0"
           style={{
             background:
-              'radial-gradient(120% 80% at 78% 0%, var(--color-brand-50) 0%, transparent 55%)',
+              'radial-gradient(90% 70% at 85% -5%, var(--color-brand-100) 0%, transparent 60%), ' +
+              'radial-gradient(70% 60% at 5% 5%, var(--color-surface-100) 0%, transparent 55%)',
           }}
         />
 
-        <Container>
-          <div className="grid items-center gap-16 py-20 sm:py-28 lg:grid-cols-[1.15fr_1fr] lg:gap-20 lg:py-32">
+        <Container className="relative">
+          <div className="grid items-center gap-14 py-16 sm:py-24 lg:grid-cols-[1.1fr_1fr] lg:gap-20 lg:py-28">
             <div className="animate-rise">
-              <Badge className="border-brand-200 bg-brand-50 text-brand-700">
+              <Badge className="border-brand-200 bg-white text-brand-700 shadow-[var(--shadow-hair)]">
                 <span className="relative flex h-1.5 w-1.5">
                   <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand-500 opacity-60" />
                   <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-brand-600" />
                 </span>
-                Live availability across all three branches
+                Live availability · all three branches
               </Badge>
 
-              <h1 className="mt-7 text-[2.75rem] leading-[1.06] font-normal tracking-tight text-ink-900 sm:text-6xl lg:text-[4.25rem]">
-                Know before
+              <h1 className="mt-6 text-[2.6rem] leading-[1.05] font-extrabold tracking-tight text-ink-900 sm:text-[3.4rem] lg:text-[4rem]">
+                Healthy smiles,
                 <br />
-                you call.
+                <span className="text-brand-600">without the wait.</span>
               </h1>
 
-              <p className="mt-7 max-w-lg text-lg leading-relaxed text-ink-500">
+              <p className="mt-6 max-w-lg text-lg leading-relaxed text-ink-500">
                 {organization?.description ??
-                  'Maralit Dental Clinic has cared for Batangas families since 1998.'}
+                  'Maralit Dental Clinic has cared for Los Baños families since 1998.'}
               </p>
 
-              <div className="mt-10 flex flex-wrap items-center gap-3">
+              <div className="mt-9 flex flex-wrap items-center gap-3">
                 <ButtonLink to="/schedule" size="lg">
                   <CalendarCheck className="h-4 w-4" aria-hidden />
                   Check availability
@@ -78,9 +89,22 @@ export function HomePage() {
                 </ButtonLink>
               </div>
 
-              <p className="mt-6 text-sm text-ink-400">
-                Appointments are made by phone — see when a branch is free, then call.
-              </p>
+              {/* Trust cues. A clinic site lives or dies on these. */}
+              <ul className="mt-10 flex flex-wrap gap-x-7 gap-y-3">
+                {[
+                  { icon: ShieldCheck, label: 'PRC-licensed dentists' },
+                  { icon: HeartPulse, label: 'Sterilised, single-use kits' },
+                  { icon: Wallet, label: 'HMO & instalments accepted' },
+                ].map((item) => (
+                  <li
+                    key={item.label}
+                    className="inline-flex items-center gap-2 text-sm text-ink-600"
+                  >
+                    <item.icon className="h-4 w-4 text-brand-500" aria-hidden />
+                    {item.label}
+                  </li>
+                ))}
+              </ul>
             </div>
 
             {/* A miniature of the real calendar. It sells the core feature far
@@ -92,16 +116,19 @@ export function HomePage() {
         </Container>
 
         {organization ? (
-          <Container>
-            <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-[var(--radius-xl)] border bg-[color-mix(in_srgb,var(--color-ink-900)_8%,transparent)] hairline lg:grid-cols-4">
+          <Container className="relative pb-16 sm:pb-20">
+            <dl className="grid grid-cols-2 overflow-hidden rounded-[var(--radius-2xl)] border border-surface-200 bg-white shadow-[var(--shadow-soft)] lg:grid-cols-4">
               {organization.stats.map((stat) => (
-                <div key={stat.label} className="bg-bone-50 px-6 py-8 text-center">
-                  <dt className="order-2 mt-2 text-xs tracking-wide text-ink-400 uppercase">
-                    {stat.label}
-                  </dt>
-                  <dd className="order-1 font-display text-3xl text-ink-900 tabular sm:text-4xl">
+                <div
+                  key={stat.label}
+                  className="border-surface-200 px-6 py-8 text-center not-last:border-r odd:border-r even:border-r-0 lg:even:border-r [&:nth-child(-n+2)]:border-b lg:[&:nth-child(-n+2)]:border-b-0 lg:last:border-r-0"
+                >
+                  <dd className="font-display text-3xl font-extrabold text-brand-600 tabular sm:text-4xl">
                     {stat.value}
                   </dd>
+                  <dt className="mt-2 text-xs tracking-wide text-ink-400 uppercase">
+                    {stat.label}
+                  </dt>
                 </div>
               ))}
             </dl>
@@ -140,7 +167,7 @@ export function HomePage() {
       {/* ---------------------------------------------------------------- */}
       {/* How booking works — the site does not book, so say so plainly.    */}
       {/* ---------------------------------------------------------------- */}
-      <Section className="border-y bg-bone-200/50 hairline">
+      <Section className="border-y bg-surface-50 hairline">
         <Container>
           <SectionHeading
             eyebrow="How it works"
@@ -167,12 +194,15 @@ export function HomePage() {
                 body: 'The front desk books you with the right dentist and confirms your slot. It shows on the calendar right away.',
               },
             ].map((step, index) => (
-              <li key={step.title} className="relative">
-                <div className="flex items-center gap-4">
-                  <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full border bg-white hairline">
-                    <step.icon className="h-4.5 w-4.5 text-brand-600" aria-hidden />
+              <li
+                key={step.title}
+                className="relative rounded-[var(--radius-xl)] border border-surface-200 bg-white p-7 shadow-[var(--shadow-hair)]"
+              >
+                <div className="flex items-center justify-between gap-4">
+                  <span className="icon-chip h-12 w-12 shrink-0">
+                    <step.icon className="h-5 w-5" aria-hidden />
                   </span>
-                  <span className="font-display text-sm text-ink-400 tabular">
+                  <span className="font-display text-2xl font-extrabold text-surface-200 tabular">
                     0{index + 1}
                   </span>
                 </div>
@@ -217,29 +247,32 @@ export function HomePage() {
       {/* ---------------------------------------------------------------- */}
       <Section className="pt-0">
         <Container>
-          <div className="relative overflow-hidden rounded-[var(--radius-xl)] bg-ink-900 px-8 py-16 text-center sm:px-16 sm:py-20">
+          <div className="relative overflow-hidden rounded-[var(--radius-2xl)] bg-gradient-to-br from-brand-700 via-brand-600 to-brand-800 px-8 py-16 text-center sm:px-16 sm:py-20">
             <div
               aria-hidden
-              className="pointer-events-none absolute inset-0"
+              className="pointer-events-none absolute inset-0 opacity-60"
               style={{
                 background:
-                  'radial-gradient(90% 120% at 50% 0%, rgb(20 120 108 / 0.35) 0%, transparent 60%)',
+                  'radial-gradient(70% 90% at 50% 0%, rgb(255 255 255 / 0.18) 0%, transparent 60%)',
               }}
             />
             <div className="relative">
-              <h2 className="mx-auto max-w-2xl text-3xl leading-tight text-bone-50 sm:text-4xl">
+              <span className="icon-chip mx-auto h-12 w-12 bg-white/15 text-white">
+                <Phone className="h-5 w-5" aria-hidden />
+              </span>
+              <h2 className="mx-auto mt-6 max-w-2xl text-3xl leading-tight text-white sm:text-4xl">
                 Toothache today? We keep slots open for emergencies.
               </h2>
-              <p className="mx-auto mt-5 max-w-xl text-[0.9375rem] leading-relaxed text-bone-300/80">
+              <p className="mx-auto mt-5 max-w-xl text-[0.9375rem] leading-relaxed text-brand-50/85">
                 Call the emergency line and we will get you seen at the nearest branch with a
                 dentist on duty.
               </p>
               {organization ? (
                 <a
                   href={`tel:${organization.emergencyHotline.replace(/[^\d+]/g, '')}`}
-                  className="mt-9 inline-flex h-13 items-center gap-2.5 rounded-full bg-bone-50 px-8 text-base font-medium text-ink-900 transition-transform hover:scale-[1.02]"
+                  className="mt-9 inline-flex h-14 items-center gap-2.5 rounded-full bg-white px-9 text-lg font-bold text-brand-700 shadow-lg transition-transform hover:scale-[1.03]"
                 >
-                  <Phone className="h-4 w-4" aria-hidden />
+                  <Phone className="h-4.5 w-4.5" aria-hidden />
                   <span className="tabular">{organization.emergencyHotline}</span>
                 </a>
               ) : null}
@@ -271,7 +304,7 @@ function BranchCard({ clinic, index }: { clinic: Clinic; index: number }) {
           <h3 className="mt-5 text-2xl">{clinic.shortName}</h3>
         </div>
         {clinic.isMainBranch ? (
-          <Badge className="border-bone-300 bg-bone-200 text-ink-500">Main branch</Badge>
+          <Badge className="border-surface-200 bg-surface-100 text-ink-500">Main branch</Badge>
         ) : null}
       </div>
 
@@ -300,7 +333,7 @@ function BranchCard({ clinic, index }: { clinic: Clinic; index: number }) {
             'inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium',
             open
               ? 'border-[var(--color-slot-open-line)] bg-[var(--color-slot-open)] text-[var(--color-slot-open-ink)]'
-              : 'border-bone-300 bg-bone-200 text-ink-400',
+              : 'border-surface-200 bg-surface-100 text-ink-400',
           )}
         >
           <span
@@ -349,13 +382,13 @@ function CalendarPreview() {
     available: 'bg-[var(--color-slot-open)] border-[var(--color-slot-open-line)]',
     limited: 'bg-[var(--color-slot-filling)] border-[var(--color-slot-filling-line)]',
     full: 'bg-[var(--color-slot-full)] border-[var(--color-slot-full-line)]',
-    closed: 'hatch bg-bone-200 border-bone-300',
+    closed: 'hatch bg-surface-100 border-surface-200',
   };
 
   return (
     <Card className="w-full max-w-sm p-7 shadow-[var(--shadow-lift)]">
       <div className="flex items-center justify-between">
-        <p className="font-display text-lg">Tanauan</p>
+        <p className="font-display text-lg font-bold">Bayog</p>
         <span className="text-xs text-ink-400">This week</span>
       </div>
 

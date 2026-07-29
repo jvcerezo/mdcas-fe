@@ -20,14 +20,14 @@ export function StaffLayout() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-bone-100">
+    <div className="flex min-h-screen flex-col bg-surface-50">
       <header className="sticky top-0 z-40 border-b bg-white/90 backdrop-blur-md hairline">
         <Container wide>
           <div className="flex h-16 items-center justify-between gap-6">
             <div className="flex items-center gap-8">
               <Link to="/" className="flex items-baseline gap-2.5">
                 <span className="font-display text-base text-ink-900">Maralit Dental</span>
-                <span className="rounded-full bg-ink-900 px-2 py-0.5 text-[0.625rem] font-semibold tracking-[0.1em] text-bone-50 uppercase">
+                <span className="rounded-full bg-ink-900 px-2 py-0.5 text-[0.625rem] font-semibold tracking-[0.1em] text-surface-0 uppercase">
                   Staff
                 </span>
               </Link>
@@ -44,8 +44,8 @@ export function StaffLayout() {
                       cx(
                         'inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition-colors',
                         isActive
-                          ? 'bg-bone-200 text-ink-900'
-                          : 'text-ink-500 hover:bg-bone-100 hover:text-ink-900',
+                          ? 'bg-surface-100 text-ink-900'
+                          : 'text-ink-500 hover:bg-surface-50 hover:text-ink-900',
                       )
                     }
                   >
@@ -89,7 +89,7 @@ export function StaffLayout() {
                 className={({ isActive }) =>
                   cx(
                     'flex-1 rounded-full px-4 py-2 text-center text-sm font-medium transition-colors',
-                    isActive ? 'bg-bone-200 text-ink-900' : 'text-ink-500',
+                    isActive ? 'bg-surface-100 text-ink-900' : 'text-ink-500',
                   )
                 }
               >

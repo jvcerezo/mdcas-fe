@@ -77,7 +77,7 @@ export function ClinicDetailPage() {
               <div>
                 <div className="flex flex-wrap items-center gap-3">
                   {clinic.isMainBranch ? (
-                    <Badge className="border-bone-400 bg-white/70 text-ink-600">
+                    <Badge className="border-surface-300 bg-white/70 text-ink-600">
                       Main branch
                     </Badge>
                   ) : null}
@@ -85,7 +85,7 @@ export function ClinicDetailPage() {
                     className={cx(
                       open
                         ? 'border-[var(--color-slot-open-line)] bg-[var(--color-slot-open)] text-[var(--color-slot-open-ink)]'
-                        : 'border-bone-400 bg-white/70 text-ink-400',
+                        : 'border-surface-300 bg-white/70 text-ink-400',
                     )}
                   >
                     {open ? 'Open now' : 'Closed now'}
@@ -115,7 +115,7 @@ export function ClinicDetailPage() {
 
                 <a
                   href={`tel:${clinic.phone.replace(/[^\d+]/g, '')}`}
-                  className="mt-6 flex h-13 w-full items-center justify-center gap-2.5 rounded-full bg-ink-900 text-base font-medium text-bone-50 transition-colors hover:bg-ink-700"
+                  className="mt-6 flex h-13 w-full items-center justify-center gap-2.5 rounded-full bg-brand-600 text-base font-medium text-white shadow-[var(--shadow-brand)] transition-colors hover:bg-brand-700"
                 >
                   <Phone className="h-4 w-4" aria-hidden />
                   <span className="tabular">{clinic.phone}</span>
@@ -219,7 +219,7 @@ export function ClinicDetailPage() {
       </Section>
 
       {/* Services */}
-      <Section className="border-t bg-bone-200/40 hairline">
+      <Section className="border-t bg-surface-100/40 hairline">
         <Container>
           <SectionHeading
             eyebrow="Services"
@@ -252,7 +252,7 @@ export function ClinicDetailPage() {
 
       {/* Weekly roster */}
       {providers.length > 0 ? (
-        <Section className="border-t bg-bone-200/40 pt-16 hairline">
+        <Section className="border-t bg-surface-100/40 pt-16 hairline">
           <Container>
             <SectionHeading
               eyebrow="Weekly roster"

@@ -62,7 +62,7 @@ export function StaffLoginPage() {
           }}
         />
         <div className="relative flex h-full flex-col justify-between p-14">
-          <Link to="/" className="font-display text-xl text-bone-50">
+          <Link to="/" className="font-display text-xl text-surface-0">
             Maralit Dental
           </Link>
 
@@ -70,16 +70,16 @@ export function StaffLoginPage() {
             <p className="text-xs font-semibold tracking-[0.16em] text-brand-300 uppercase">
               Staff portal
             </p>
-            <h1 className="mt-6 max-w-md text-4xl leading-[1.15] text-bone-50">
+            <h1 className="mt-6 max-w-md text-4xl leading-[1.15] text-surface-0">
               The schedule your patients see, managed here.
             </h1>
-            <p className="mt-6 max-w-sm leading-relaxed text-bone-300/70">
+            <p className="mt-6 max-w-sm leading-relaxed text-surface-200/70">
               Every booking you record updates the public availability calendar immediately —
               with patient details kept private.
             </p>
           </div>
 
-          <p className="text-xs text-bone-400/50">
+          <p className="text-xs text-surface-300/50">
             Authorised staff only. Access is logged.
           </p>
         </div>
@@ -97,7 +97,7 @@ export function StaffLoginPage() {
           </Link>
 
           <div className="mt-10">
-            <span className="grid h-11 w-11 place-items-center rounded-full bg-bone-200">
+            <span className="grid h-11 w-11 place-items-center rounded-full bg-surface-100">
               <Lock className="h-4.5 w-4.5 text-ink-600" aria-hidden />
             </span>
             <h2 className="mt-6 text-2xl">Sign in</h2>
@@ -145,7 +145,7 @@ export function StaffLoginPage() {
             </Button>
           </form>
 
-          <Card className="mt-8 bg-bone-200/50 p-4">
+          <Card className="mt-8 bg-surface-100/50 p-4">
             <p className="text-xs leading-relaxed text-ink-500">
               Lost access? Ask a clinic administrator to reset your password. There is no
               self-service password reset — staff accounts are created and managed internally.

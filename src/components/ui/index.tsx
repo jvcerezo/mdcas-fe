@@ -72,7 +72,7 @@ export function SectionHeading({
       )}
     >
       {eyebrow ? <p className="eyebrow mb-4">{eyebrow}</p> : null}
-      <h2 className="text-3xl leading-[1.15] font-normal sm:text-4xl">{title}</h2>
+      <h2 className="text-3xl leading-[1.15] font-bold sm:text-4xl">{title}</h2>
       {lead ? <p className="mt-5 text-lg leading-relaxed text-ink-500">{lead}</p> : null}
     </div>
   );
@@ -87,23 +87,24 @@ type ButtonSize = 'sm' | 'md' | 'lg';
 
 const BUTTON_VARIANTS: Record<ButtonVariant, string> = {
   primary:
-    'bg-ink-900 text-bone-50 hover:bg-ink-700 shadow-[var(--shadow-hair)] disabled:hover:bg-ink-900',
+    'bg-brand-600 text-white shadow-[var(--shadow-brand)] hover:bg-brand-700 ' +
+    'disabled:hover:bg-brand-600 disabled:shadow-none',
   secondary:
-    'bg-white text-ink-800 border border-[color-mix(in_srgb,var(--color-ink-900)_12%,transparent)] hover:border-ink-400 hover:bg-bone-50',
-  ghost: 'text-ink-600 hover:text-ink-900 hover:bg-bone-200',
+    'bg-white text-ink-700 border border-surface-300 hover:border-brand-300 hover:text-brand-700 hover:bg-brand-50',
+  ghost: 'text-ink-500 hover:text-brand-700 hover:bg-brand-50',
   danger:
     'bg-white text-[var(--color-slot-full-ink)] border border-[var(--color-slot-full-line)] hover:bg-[var(--color-slot-full)]',
 };
 
 const BUTTON_SIZES: Record<ButtonSize, string> = {
-  sm: 'h-9 px-3.5 text-sm gap-1.5',
-  md: 'h-11 px-5 text-[0.9375rem] gap-2',
+  sm: 'h-9 px-4 text-sm gap-1.5',
+  md: 'h-11 px-5.5 text-[0.9375rem] gap-2',
   lg: 'h-13 px-7 text-base gap-2.5',
 };
 
 const BUTTON_BASE =
-  'inline-flex items-center justify-center rounded-full font-medium transition-all duration-200 ' +
-  'disabled:cursor-not-allowed disabled:opacity-50 whitespace-nowrap';
+  'inline-flex items-center justify-center rounded-full font-semibold transition-all duration-200 ' +
+  'disabled:cursor-not-allowed disabled:opacity-50 whitespace-nowrap active:scale-[0.98]';
 
 interface ButtonOwnProps {
   variant?: ButtonVariant;
@@ -163,9 +164,9 @@ export function Card({
   return (
     <div
       className={cx(
-        'rounded-[var(--radius-xl)] border bg-white hairline',
+        'rounded-[var(--radius-xl)] border bg-white shadow-[var(--shadow-hair)] hairline',
         hover &&
-          'transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[var(--shadow-soft)]',
+          'transition-all duration-300 hover:-translate-y-1 hover:border-brand-200 hover:shadow-[var(--shadow-soft)]',
         className,
       )}
     >
@@ -224,9 +225,9 @@ export function Field({
 }
 
 export const inputClass =
-  'w-full rounded-[var(--radius-md)] border border-[color-mix(in_srgb,var(--color-ink-900)_14%,transparent)] ' +
+  'w-full rounded-[var(--radius-md)] border border-surface-300 ' +
   'bg-white px-3.5 py-2.5 text-[0.9375rem] text-ink-800 placeholder:text-ink-400 ' +
-  'transition-colors focus:border-brand-500 focus:outline-none';
+  'transition-colors focus:border-brand-500 focus:ring-4 focus:ring-brand-100 focus:outline-none';
 
 /* -------------------------------------------------------------------------- */
 /* States                                                                     */
@@ -279,7 +280,7 @@ export function EmptyState({
   action?: ReactNode;
 }) {
   return (
-    <div className="flex flex-col items-center justify-center gap-3 rounded-[var(--radius-xl)] border border-dashed border-bone-400 py-16 text-center">
+    <div className="flex flex-col items-center justify-center gap-3 rounded-[var(--radius-xl)] border border-dashed border-surface-300 py-16 text-center">
       <p className="font-display text-lg text-ink-700">{title}</p>
       {description ? <p className="max-w-sm text-sm text-ink-500">{description}</p> : null}
       {action}
