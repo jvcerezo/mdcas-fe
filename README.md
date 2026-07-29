@@ -9,20 +9,63 @@ API: [`mdcas-be`](https://github.com/jvcerezo/mdcas-be)
 
 ## Quick start
 
-Start the API first (it runs with no database — see its README), then:
-
 ```bash
 npm install
 npm run dev
 ```
 
-Open `http://localhost:5173`.
+Open `http://localhost:5173`. **No backend required.**
 
-`vite.config.ts` proxies `/api` to `http://localhost:5000`, so the browser talks
-to a single origin in development and CORS never applies. Point it elsewhere
-with `VITE_API_PROXY`.
+## Two modes
 
-For production, set `VITE_API_URL` to the deployed API's base URL.
+The app runs against either a real API or entirely in the browser, and the
+pages cannot tell which. The standalone adapter is assigned to the network
+client's type with no cast, so the two cannot drift apart without failing the
+build.
+
+| | Standalone (default) | Networked |
+|---|---|---|
+| Enabled by | `VITE_API_URL` blank | `VITE_API_URL` set |
+| Clinics, services, staff | bundled in `src/data/content.ts` | from the API |
+| Schedule engine | ported to `src/lib/scheduleEngine.ts` | on the server |
+| Bookings | this browser's `localStorage` | MongoDB |
+| Sign-in | checked in the browser | bcrypt on the server |
+
+Force either with `VITE_DATA_MODE=local` or `VITE_DATA_MODE=api`.
+
+### What standalone mode cannot do
+
+**Bookings live in one browser on one device.** The front desk's bookings will
+not appear on a patient's phone, on the other clinic PC, or in a private
+window, and clearing site data erases them. "Staff book it, everyone sees it"
+needs shared storage by definition — that is the backend's job, not a bug to
+work around.
+
+**Sign-in is a UX gate, not security.** The demo passwords ship in the
+JavaScript bundle and every appointment sits in browser storage, readable with
+devtools. Standalone mode is for demos, review and development. **It must not
+hold real patient records.**
+
+The staff portal shows a banner saying so, because staff would otherwise
+reasonably assume a booking they record is visible to colleagues.
+
+### Demo sign-in
+
+```
+admin@maralitdental.ph          / ChangeMe123!   all branches, admin
+hannah.deleon@maralitdental.ph  / ChangeMe123!   F.O. Santos only
+andrei.lim@maralitdental.ph     / ChangeMe123!   Junction Rd. front desk
+```
+
+Bookings for the next six weeks are generated on first load from the real
+roster, so the calendar is never empty. "Reset demo data" in the staff banner
+regenerates them.
+
+### Connecting the backend later
+
+Set `VITE_API_URL` and redeploy. Nothing else changes — no page or component
+imports the local adapter directly. Keep `src/data/content.ts` in sync with
+`mdcas-be/src/data/seed.data.ts` while both exist.
 
 ---
 

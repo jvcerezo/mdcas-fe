@@ -1,9 +1,21 @@
 /**
- * Typed client for the MDCAS API.
+ * Data access for the app.
  *
- * In development `VITE_API_URL` is left blank and Vite proxies `/api` to the
- * backend, so the browser sees a single origin. In production it is set to the
- * deployed API's base URL.
+ * Two interchangeable implementations sit behind one `api` object:
+ *
+ *   NETWORK     — talks to the MDCAS backend. Used whenever `VITE_API_URL` is
+ *                 set, and in local development where Vite proxies `/api` to
+ *                 a backend running on port 5000.
+ *
+ *   STANDALONE  — runs the whole product in the browser: content is bundled,
+ *                 the schedule engine is ported to the client, and bookings
+ *                 live in localStorage. Used when no API is configured.
+ *
+ * Pages never know which is active, so deploying the backend later is a
+ * one-line environment change rather than a rewrite.
+ *
+ * Standalone mode cannot share data between devices and has no real
+ * authentication — see the warnings in `localStore.ts` and `localBackend.ts`.
  */
 
 import type {
@@ -26,6 +38,17 @@ import type {
 
 const BASE_URL = (import.meta.env.VITE_API_URL ?? '').replace(/\/$/, '');
 
+/**
+ * Standalone mode is the default, so a fresh checkout and a bare Vercel deploy
+ * both just work. It is disabled by setting `VITE_API_URL`, or forced either
+ * way with `VITE_DATA_MODE=local | api`.
+ *
+ * In `npm run dev` the Vite proxy makes a same-origin `/api` work with no
+ * `VITE_API_URL`, so network mode is opt-in there via `VITE_DATA_MODE=api`.
+ */
+const MODE = import.meta.env.VITE_DATA_MODE;
+export const STANDALONE = MODE === 'local' || (MODE !== 'api' && BASE_URL === '');
+
 const TOKEN_KEY = 'mdcas.staff.token';
 
 export function getToken(): string | null {
@@ -44,18 +67,17 @@ export function setToken(token: string | null): void {
   } catch {
     /* Storage unavailable — the session just won't survive a reload. */
   }
+
+  // Standalone mode keeps the signed-in user alongside the token. Clearing one
+  // without the other would leave `me()` resolving for a signed-out user.
+  if (STANDALONE && !token) saveSession(null);
 }
 
-export class ApiError extends Error {
-  constructor(
-    public readonly status: number,
-    message: string,
-    public readonly details?: unknown,
-  ) {
-    super(message);
-    this.name = 'ApiError';
-  }
-}
+import { ApiError } from '@/lib/apiError';
+import { localApi } from '@/lib/localBackend';
+import { saveSession } from '@/lib/localStore';
+
+export { ApiError };
 
 interface RequestOptions {
   method?: 'GET' | 'POST' | 'PATCH' | 'DELETE';
@@ -120,7 +142,7 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
   return payload as T;
 }
 
-export const api = {
+const networkApi = {
   /* ---------------------------------------------------------------- */
   /* Public                                                            */
   /* ---------------------------------------------------------------- */
@@ -233,3 +255,13 @@ export const api = {
       auth: true,
     }),
 };
+
+/**
+ * The two implementations must stay interchangeable, so the standalone adapter
+ * is assigned to the network client's type with no cast. Adding a method to
+ * one and not the other, or changing a signature, fails the build here rather
+ * than at runtime in whichever mode nobody tested.
+ */
+const standaloneApi: typeof networkApi = localApi;
+
+export const api: typeof networkApi = STANDALONE ? standaloneApi : networkApi;

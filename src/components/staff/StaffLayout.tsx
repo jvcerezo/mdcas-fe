@@ -2,6 +2,7 @@ import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { CalendarDays, LayoutList, LogOut } from 'lucide-react';
 
 import { Container, cx } from '@/components/ui';
+import { DemoModeNotice } from '@/components/staff/DemoModeNotice';
 import { useAuth } from '@/lib/auth';
 
 const ROLE_LABELS: Record<string, string> = {
@@ -99,6 +100,8 @@ export function StaffLayout() {
           </nav>
         </Container>
       </header>
+
+      <DemoModeNotice />
 
       <main className="flex-1 py-8">
         <Outlet />
